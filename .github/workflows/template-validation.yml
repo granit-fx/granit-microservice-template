@@ -1,0 +1,66 @@
+name: Template Validation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # Weekly Monday 06:00 UTC
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  validate-template:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Install template from local source
+        run: dotnet new install .
+
+      - name: Scaffold solution
+        run: dotnet new granit-microservice -n TestScaffold -o /tmp/test-scaffold
+
+      - name: Authenticate to GitHub Packages
+        run: |
+          dotnet nuget add source \
+            https://nuget.pkg.github.com/granit-fx/index.json \
+            --name granit-registry \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --store-password-in-clear-text \
+            --configfile /tmp/test-scaffold/nuget.config
+
+      - name: Build scaffolded solution
+        run: dotnet build /tmp/test-scaffold/TestScaffold.slnx
+
+      - name: Verify file renaming
+        run: |
+          test -f /tmp/test-scaffold/TestScaffold.slnx
+          test -d /tmp/test-scaffold/src/TestScaffold.AppHost
+          test -d /tmp/test-scaffold/src/TestScaffold.CatalogService
+          test -d /tmp/test-scaffold/src/TestScaffold.IdentityService
+          echo "All files renamed correctly"
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '[CI] Template validation failed',
+              body: `Template validation failed on ${new Date().toISOString()}.\n\nSee [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`,
+              labels: ['bug', 'Area: CI/CD']
+            });
