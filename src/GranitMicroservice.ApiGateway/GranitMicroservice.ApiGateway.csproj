@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\GranitMicroservice.ServiceDefaults\GranitMicroservice.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>

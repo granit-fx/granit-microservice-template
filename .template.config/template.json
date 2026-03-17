@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Digital Dynamics",
+  "classifications": ["Web", "API", "Microservices", "Aspire", "Granit"],
+  "identity": "Granit.Templates.Microservice",
+  "name": "Granit Microservice Solution",
+  "shortName": "granit-microservice",
+  "description": "A complete Granit microservice solution with .NET Aspire orchestration, API Gateway (YARP), multiple services, Wolverine messaging, and Keycloak authentication.",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "sourceName": "GranitMicroservice",
+  "preferNameDirectory": true,
+  "defaultName": "MyMicroservices",
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "description": "The target framework for the solution.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net10.0",
+          "description": "Target .NET 10"
+        }
+      ],
+      "defaultValue": "net10.0",
+      "replaces": "net10.0"
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "If specified, skips the automatic restore of the solution on create.",
+      "defaultValue": "false"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            ".git/**",
+            ".github/**",
+            ".template.config/**",
+            "**/.vs/**",
+            "**/bin/**",
+            "**/obj/**",
+            "**/*.user",
+            "**/packages.lock.json",
+            "CLAUDE.md"
+          ]
+        }
+      ]
+    }
+  ],
+  "primaryOutputs": [
+    {
+      "path": "GranitMicroservice.slnx"
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by this solution.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ]
+}
