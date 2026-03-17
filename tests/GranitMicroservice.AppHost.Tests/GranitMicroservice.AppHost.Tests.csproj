@@ -5,12 +5,18 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
+  <!-- EF Core is not used here; remove the global using injected by tests/Directory.Build.props -->
+  <ItemGroup>
+    <Using Remove="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Shouldly" />
+    <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 
   <ItemGroup>

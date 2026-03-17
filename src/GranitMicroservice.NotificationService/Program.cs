@@ -1,5 +1,8 @@
+using Granit.Caching.StackExchangeRedis.Extensions;
 using Granit.Core.Extensions;
-using Granit.Persistence.Interceptors;
+using Granit.Diagnostics.Extensions;
+using Granit.Http.ExceptionHandling.Extensions;
+using Granit.Persistence.Extensions;
 using GranitMicroservice.NotificationService;
 using GranitMicroservice.NotificationService.Persistence;
 using GranitMicroservice.ServiceDefaults;
@@ -8,22 +11,61 @@ using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+// ── Step 1 · Shared cross-cutting concerns ────────────────────────────────────
+// AddSharedHostingAsync registers observability, health checks, JWT bearer auth,
+// Redis cache, and the Wolverine outbox backed by PostgreSQL.
 await builder.AddSharedHostingAsync();
 
+// ── Step 1b · Infrastructure health checks ───────────────────────────────────
+// This service is a pure message consumer — no HTTP endpoints — but it still
+// needs readiness/startup probes so Aspire and Kubernetes know when it is ready
+// to process messages from RabbitMQ.
+builder.Services.AddHealthChecks()
+    .AddGranitDbContextHealthCheck<NotificationServiceDbContext>()
+    .AddGranitRedisHealthCheck();
+builder.AddRabbitMqHealthCheck();
+
+// ── Step 2 · Service-specific Granit modules ──────────────────────────────────
+// NotificationServiceModule registers the Wolverine message handlers that react
+// to integration events published by other services (e.g., OrderPlacedEvent →
+// send email/SMS). This service is intentionally event-driven: it exposes no
+// HTTP endpoints — all work is triggered asynchronously via RabbitMQ.
 await builder.AddGranitAsync(granit => granit
     .AddModule<NotificationServiceModule>());
 
-builder.Services.AddDbContextFactory<NotificationServiceDbContext>((sp, options) =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("notification-db"));
-    options.AddInterceptors(
-        sp.GetRequiredService<AuditedEntityInterceptor>());
-});
+// ── Step 3 · EF Core DbContext ────────────────────────────────────────────────
+// The notification service persists a delivery log (sent/failed notifications)
+// for auditing and retry purposes. The Wolverine outbox guarantees at-least-once
+// delivery — the delivery log lets operators detect and investigate duplicates.
+// AddGranitDbContext uses ServiceLifetime.Scoped so that Granit interceptors
+// (AuditedEntityInterceptor, …) can be resolved from the scoped provider.
+builder.Services.AddGranitDbContext<NotificationServiceDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("notification-db")));
 
 WebApplication app = builder.Build();
 
+// ── Step 4 · Granit middleware pipeline ───────────────────────────────────────
+// UseGranitAsync runs module OnApplicationInitialization hooks (Wolverine
+// startup, …). It does NOT apply EF Core migrations.
 await app.UseGranitAsync();
 
-app.MapDefaultEndpoints();
+// ── Step 4b · EF Core migrations ─────────────────────────────────────────────
+await using (var migrationScope = app.Services.CreateAsyncScope())
+{
+    var factory = migrationScope.ServiceProvider
+        .GetRequiredService<IDbContextFactory<NotificationServiceDbContext>>();
+    await using var db = await factory.CreateDbContextAsync();
+    await db.Database.MigrateAsync();
+}
+
+// UseGranitExceptionHandling maps unhandled exceptions to RFC 7807 Problem
+// Details responses. 5xx details masked in non-Development (ISO 27001).
+app.UseGranitExceptionHandling();
+
+// ── Step 5 · Health endpoints ─────────────────────────────────────────────────
+// MapGranitHealthChecks → /health/live (always 200), /health/ready (readiness
+//   tag), /health/startup (startup tag) with structured JSON and stampede cache.
+// No other endpoints: this service has no HTTP API surface.
+app.MapGranitHealthChecks();
 
 await app.RunAsync();

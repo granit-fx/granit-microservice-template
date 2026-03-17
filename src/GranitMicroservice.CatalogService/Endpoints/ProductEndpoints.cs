@@ -1,4 +1,7 @@
+using Granit.Caching;
 using Granit.Core.Events;
+using Granit.RateLimiting.AspNetCore;
+using GranitMicroservice.CatalogService.Cache;
 using GranitMicroservice.CatalogService.Domain;
 using GranitMicroservice.CatalogService.Persistence;
 using GranitMicroservice.Shared.Events;
@@ -15,11 +18,14 @@ public static class ProductEndpoints
             .WithTags("Products")
             .RequireAuthorization();
 
-        group.MapGet("/", GetProducts);
-        group.MapGet("/{id:guid}", GetProduct);
-        group.MapPost("/", CreateProduct);
-        group.MapPut("/{id:guid}", UpdateProduct);
-        group.MapDelete("/{id:guid}", DeleteProduct);
+        // api-default (SlidingWindow 1000 req/min) — read operations, generous quota
+        group.MapGet("/", GetProducts).RequireGranitRateLimiting("api-default");
+        group.MapGet("/{id:guid}", GetProduct).RequireGranitRateLimiting("api-default");
+
+        // api-write (TokenBucket 50 tokens, +10/10s) — write operations, burst-controlled
+        group.MapPost("/", CreateProduct).RequireGranitRateLimiting("api-write");
+        group.MapPut("/{id:guid}", UpdateProduct).RequireGranitRateLimiting("api-write");
+        group.MapDelete("/{id:guid}", DeleteProduct).RequireGranitRateLimiting("api-write");
 
         return group;
     }
@@ -44,8 +50,14 @@ public static class ProductEndpoints
     private static async Task<Results<Ok<CatalogProductResponse>, ProblemHttpResult>> GetProduct(
         Guid id,
         CatalogDbContext db,
+        ICacheService<ProductCacheItem, Guid> cache,
         CancellationToken cancellationToken)
     {
+        // Cache-aside: serve from Redis, fall back to the database on a miss.
+        var cached = await cache.GetAsync(id, cancellationToken);
+        if (cached is not null)
+            return TypedResults.Ok(MapFromCacheItem(cached));
+
         var product = await db.Products
             .Include(p => p.Category)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
@@ -57,6 +69,7 @@ public static class ProductEndpoints
                 statusCode: StatusCodes.Status404NotFound);
         }
 
+        await cache.SetAsync(id, MapToCacheItem(product), cancellationToken: cancellationToken);
         return TypedResults.Ok(MapToResponse(product));
     }
 
@@ -105,6 +118,7 @@ public static class ProductEndpoints
         UpdateCatalogProductRequest request,
         CatalogDbContext db,
         IDistributedEventBus eventBus,
+        ICacheService<ProductCacheItem, Guid> cache,
         CancellationToken cancellationToken)
     {
         var product = await db.Products
@@ -129,12 +143,15 @@ public static class ProductEndpoints
             new CatalogProductUpdatedEvent(product.Id, product.Name, product.Price),
             cancellationToken);
 
+        await cache.RemoveAsync(id, cancellationToken);
+
         return TypedResults.Ok(MapToResponse(product));
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteProduct(
         Guid id,
         CatalogDbContext db,
+        ICacheService<ProductCacheItem, Guid> cache,
         CancellationToken cancellationToken)
     {
         var product = await db.Products
@@ -150,6 +167,8 @@ public static class ProductEndpoints
         db.Products.Remove(product);
         await db.SaveChangesAsync(cancellationToken);
 
+        await cache.RemoveAsync(id, cancellationToken);
+
         return TypedResults.NoContent();
     }
 
@@ -163,4 +182,21 @@ public static class ProductEndpoints
             product.Category?.Name,
             product.CreatedAt,
             product.ModifiedAt);
+
+    private static ProductCacheItem MapToCacheItem(Product product) =>
+        new()
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name,
+            CreatedAt = product.CreatedAt,
+            ModifiedAt = product.ModifiedAt,
+        };
+
+    private static CatalogProductResponse MapFromCacheItem(ProductCacheItem item) =>
+        new(item.Id, item.Name, item.Description, item.Price,
+            item.CategoryId, item.CategoryName, item.CreatedAt, item.ModifiedAt);
 }
