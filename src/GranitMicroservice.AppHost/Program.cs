@@ -1,31 +1,32 @@
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
-// Infrastructure
-var postgres = builder.AddPostgres("postgres");
+// Infrastructure — persistent containers survive AppHost restarts
+var postgres = builder.AddPostgres("postgres")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithPgAdmin();
 var identityDb = postgres.AddDatabase("identity-db");
 var catalogDb = postgres.AddDatabase("catalog-db");
 var notificationDb = postgres.AddDatabase("notification-db");
 
-var redis = builder.AddRedis("redis");
+var redis = builder.AddRedis("redis")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithRedisInsight();
 
-var rabbitmq = builder.AddRabbitMQ("rabbitmq")
+var rabbitmq = builder.AddRabbitMQ("messaging")
+    .WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin();
 
-var keycloak = builder.AddContainer("keycloak", "quay.io/keycloak/keycloak", "26.2")
-    .WithArgs("start-dev", "--import-realm")
-    .WithBindMount("../../infra/keycloak-realms", "/opt/keycloak/data/import")
-    .WithHttpEndpoint(port: 8080, targetPort: 8080, name: "http")
-    .WithEnvironment("KC_HEALTH_ENABLED", "true")
-    .WithEnvironment("KEYCLOAK_ADMIN", "admin")
-    .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", "admin");
+var keycloak = builder.AddKeycloak("keycloak", port: 8080)
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithDataVolume()
+    .WithRealmImport("../../infra/keycloak-realms");
 
-// Services
+// Services — WaitFor ensures infrastructure is ready before services start
 var identityService = builder.AddProject<Projects.GranitMicroservice_IdentityService>("identity-service")
     .WithReference(identityDb)
     .WithReference(redis)
     .WithReference(rabbitmq)
     .WaitFor(identityDb)
-    .WaitFor(redis)
     .WaitFor(rabbitmq)
     .WaitFor(keycloak);
 
@@ -34,7 +35,6 @@ var catalogService = builder.AddProject<Projects.GranitMicroservice_CatalogServi
     .WithReference(redis)
     .WithReference(rabbitmq)
     .WaitFor(catalogDb)
-    .WaitFor(redis)
     .WaitFor(rabbitmq);
 
 var notificationService = builder.AddProject<Projects.GranitMicroservice_NotificationService>("notification-service")
@@ -42,7 +42,6 @@ var notificationService = builder.AddProject<Projects.GranitMicroservice_Notific
     .WithReference(redis)
     .WithReference(rabbitmq)
     .WaitFor(notificationDb)
-    .WaitFor(redis)
     .WaitFor(rabbitmq);
 
 builder.AddProject<Projects.GranitMicroservice_ApiGateway>("api-gateway")

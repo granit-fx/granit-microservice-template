@@ -9,4 +9,9 @@
     <Project Path="src/GranitMicroservice.CatalogService/GranitMicroservice.CatalogService.csproj" />
     <Project Path="src/GranitMicroservice.NotificationService/GranitMicroservice.NotificationService.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GranitMicroservice.CatalogService.Tests/GranitMicroservice.CatalogService.Tests.csproj" />
+    <Project Path="tests/GranitMicroservice.IdentityService.Tests/GranitMicroservice.IdentityService.Tests.csproj" />
+    <Project Path="tests/GranitMicroservice.NotificationService.Tests/GranitMicroservice.NotificationService.Tests.csproj" />
+  </Folder>
 </Solution>
