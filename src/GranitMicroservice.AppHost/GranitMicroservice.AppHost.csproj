@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="13.1.2" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsAspireHost>true</IsAspireHost>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" />
+    <PackageReference Include="Aspire.Hosting.Keycloak" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GranitMicroservice.ApiGateway\GranitMicroservice.ApiGateway.csproj" />
+    <ProjectReference Include="..\GranitMicroservice.CatalogService\GranitMicroservice.CatalogService.csproj" />
+    <ProjectReference Include="..\GranitMicroservice.IdentityService\GranitMicroservice.IdentityService.csproj" />
+    <ProjectReference Include="..\GranitMicroservice.NotificationService\GranitMicroservice.NotificationService.csproj" />
+  </ItemGroup>
+
+</Project>

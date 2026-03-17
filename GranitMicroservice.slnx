@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GranitMicroservice.AppHost/GranitMicroservice.AppHost.csproj" />
+    <Project Path="src/GranitMicroservice.ServiceDefaults/GranitMicroservice.ServiceDefaults.csproj" />
+    <Project Path="src/GranitMicroservice.Shared/GranitMicroservice.Shared.csproj" />
+    <Project Path="src/GranitMicroservice.Shared.Hosting/GranitMicroservice.Shared.Hosting.csproj" />
+    <Project Path="src/GranitMicroservice.ApiGateway/GranitMicroservice.ApiGateway.csproj" />
+    <Project Path="src/GranitMicroservice.IdentityService/GranitMicroservice.IdentityService.csproj" />
+    <Project Path="src/GranitMicroservice.CatalogService/GranitMicroservice.CatalogService.csproj" />
+    <Project Path="src/GranitMicroservice.NotificationService/GranitMicroservice.NotificationService.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GranitMicroservice.CatalogService.Tests/GranitMicroservice.CatalogService.Tests.csproj" />
+    <Project Path="tests/GranitMicroservice.IdentityService.Tests/GranitMicroservice.IdentityService.Tests.csproj" />
+    <Project Path="tests/GranitMicroservice.NotificationService.Tests/GranitMicroservice.NotificationService.Tests.csproj" />
+    <Project Path="tests/GranitMicroservice.CatalogService.Tests.Integration/GranitMicroservice.CatalogService.Tests.Integration.csproj" />
+  </Folder>
+</Solution>

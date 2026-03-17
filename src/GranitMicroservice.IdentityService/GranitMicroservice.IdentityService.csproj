@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <PackageReference Include="Granit.Authentication.Keycloak" />
+    <PackageReference Include="Granit.Authorization" />
+    <PackageReference Include="Granit.Identity" />
+    <PackageReference Include="Granit.Identity.Keycloak" />
+    <PackageReference Include="Granit.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Granit.Identity.Endpoints" />
+    <PackageReference Include="Granit.Persistence" />
+    <PackageReference Include="Granit.Persistence.Migrations" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Scalar.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GranitMicroservice.Shared.Hosting\GranitMicroservice.Shared.Hosting.csproj" />
+  </ItemGroup>
+
+</Project>
