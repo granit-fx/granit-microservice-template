@@ -2,6 +2,7 @@
 
 A production-ready .NET Aspire solution template for building microservices
 with the [Granit framework](https://github.com/granit-fx/granit-dotnet).
+Full documentation at [granit-fx.dev](https://granit-fx.dev).
 
 ## What's included
 
