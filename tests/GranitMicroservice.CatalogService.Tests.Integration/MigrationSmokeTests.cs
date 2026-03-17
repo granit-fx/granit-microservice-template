@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Shouldly;
 
 namespace GranitMicroservice.CatalogService.Tests.Integration;
