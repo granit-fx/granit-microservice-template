@@ -2,6 +2,7 @@ using GranitMicroservice.CatalogService.Domain;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 
+
 namespace GranitMicroservice.CatalogService.Tests.Integration;
 
 public sealed class ProductCrudTests(CatalogDbFixture fixture) : IClassFixture<CatalogDbFixture>
