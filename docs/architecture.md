@@ -46,8 +46,17 @@ accidental coupling between services.
 
 ### Synchronous (HTTP)
 
-```text
-Client → API Gateway (YARP) → Service
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant GW as API Gateway
+    participant S as Service
+
+    C->>GW: HTTP request + JWT
+    GW->>GW: Validate JWT
+    GW->>S: Forward (service discovery)
+    S-->>GW: Response
+    GW-->>C: Response
 ```
 
 - JWT validated at the gateway edge
@@ -56,8 +65,17 @@ Client → API Gateway (YARP) → Service
 
 ### Asynchronous (Integration Events)
 
-```text
-CatalogService → [PostgreSQL outbox] → RabbitMQ → NotificationService
+```mermaid
+sequenceDiagram
+    participant CS as CatalogService
+    participant DB as PostgreSQL outbox
+    participant MQ as RabbitMQ
+    participant NS as NotificationService
+
+    CS->>DB: Save entity + event (same tx)
+    DB-->>MQ: Deliver event
+    MQ-->>NS: Route to handler
+    NS->>NS: HandleAsync()
 ```
 
 - Events implement `IIntegrationEvent` (defined in `Shared`)
@@ -65,25 +83,23 @@ CatalogService → [PostgreSQL outbox] → RabbitMQ → NotificationService
 - Stored in PostgreSQL outbox before RabbitMQ delivery
 - Handlers auto-discovered by Wolverine via convention
 
-### Distributed cache
-
-```text
-Any Service → Redis (via Granit.Caching.StackExchangeRedis)
-```
-
 ## Module dependency graph
 
-```text
-AppHost
-  └── references all service projects (Aspire orchestration)
+```mermaid
+graph BT
+    Shared[Shared<br>integration events]
+    SD[ServiceDefaults<br>OTel, health checks]
+    SH[Shared.Hosting<br>Wolverine, JWT, Redis]
 
-ApiGateway
-  └── ServiceDefaults
+    SH --> SD
+    SH --> Shared
 
-IdentityService / CatalogService / NotificationService
-  └── Shared.Hosting
-        ├── ServiceDefaults (OpenTelemetry, health checks)
-        └── Shared (integration event contracts)
+    IS[IdentityService] --> SH
+    CS[CatalogService] --> SH
+    NS[NotificationService] --> SH
+    GW[ApiGateway] --> SD
+
+    AH[AppHost] -.-> IS & CS & NS & GW
 ```
 
 ## Health check probes

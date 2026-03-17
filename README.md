@@ -41,26 +41,29 @@ and infrastructure visible.
 
 ## Architecture
 
-```text
-┌─────────────┐
-│  API Gateway │  YARP + JWT + Rate Limiting
-│  (Scalar UI) │
-└──────┬───┬──┘
-       │   │
-  ┌────┘   └────┐
-  ▼              ▼
-┌──────────┐  ┌──────────────┐
-│ Identity │  │   Catalog    │
-│ Service  │  │   Service    │──┐
-└──────────┘  └──────────────┘  │ events
-                                ▼
-                        ┌───────────────┐
-                        │ Notification  │
-                        │   Service     │
-                        └───────────────┘
+```mermaid
+graph TD
+    Client([Client]) --> GW[API Gateway<br>YARP + JWT + Rate Limiting<br>Scalar UI]
+    GW --> IS[Identity Service]
+    GW --> CS[Catalog Service]
+    CS -- integration events --> MQ[(RabbitMQ)]
+    MQ --> NS[Notification Service]
 
-Infrastructure (Aspire-managed):
-  PostgreSQL (1 DB per service) │ Redis │ RabbitMQ │ Keycloak
+    IS --- IDB[(identity-db)]
+    CS --- CDB[(catalog-db)]
+    NS --- NDB[(notification-db)]
+
+    IS & CS & NS --- Redis[(Redis)]
+    IS --> KC[Keycloak]
+
+    subgraph Infrastructure
+        IDB
+        CDB
+        NDB
+        Redis
+        MQ
+        KC
+    end
 ```
 
 ## Communication patterns
