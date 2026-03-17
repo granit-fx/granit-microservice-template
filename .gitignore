@@ -1,6 +1,8 @@
 ## .NET
 bin/
 obj/
+# WSL2 artefact: dotnet ef creates a literal "bin\Debug" directory (backslash in name)
+bin\
 *.user
 *.suo
 *.userosscache
