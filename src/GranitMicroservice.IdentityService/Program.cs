@@ -10,6 +10,9 @@ using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration["WolverinePostgresql:ConnectionString"] =
+    builder.Configuration.GetConnectionString("identity-db");
+
 await builder.AddSharedHostingAsync();
 
 await builder.AddGranitAsync(granit => granit

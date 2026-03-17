@@ -10,6 +10,10 @@ using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+// Map Aspire connection string to Wolverine PostgreSQL outbox config
+builder.Configuration["WolverinePostgresql:ConnectionString"] =
+    builder.Configuration.GetConnectionString("catalog-db");
+
 await builder.AddSharedHostingAsync();
 
 await builder.AddGranitAsync(granit => granit

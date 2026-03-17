@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration["WolverinePostgresql:ConnectionString"] =
+    builder.Configuration.GetConnectionString("notification-db");
+
 await builder.AddSharedHostingAsync();
 
 await builder.AddGranitAsync(granit => granit
