@@ -3,6 +3,7 @@ using Granit.Identity.EntityFrameworkCore.Extensions;
 using Granit.Persistence.Interceptors;
 using GranitMicroservice.IdentityService;
 using GranitMicroservice.IdentityService.Persistence;
+using Granit.Identity.Endpoints.Extensions;
 using GranitMicroservice.ServiceDefaults;
 using GranitMicroservice.Shared.Hosting.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ await app.UseGranitAsync();
 
 app.MapDefaultEndpoints();
 app.MapOpenApi();
+app.MapIdentityUserCacheEndpoints();
 app.MapScalarApiReference();
 
 await app.RunAsync();

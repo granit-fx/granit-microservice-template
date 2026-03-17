@@ -19,7 +19,13 @@ var rabbitmq = builder.AddRabbitMQ("messaging")
 var keycloak = builder.AddKeycloak("keycloak", port: 8080)
     .WithLifetime(ContainerLifetime.Persistent)
     .WithDataVolume()
-    .WithRealmImport("../../infra/keycloak-realms");
+    .WithRealmImport("../../infra/keycloak-realms")
+    // Disable HTTPS inside the container — dev uses HTTP on port 8080.
+    // The health check uses the same endpoint; without this the self-signed cert
+    // causes UntrustedRoot failures and Keycloak stays unhealthy.
+    .WithEnvironment("KC_HTTP_ENABLED", "true")
+    .WithEnvironment("KC_HOSTNAME_STRICT_HTTPS", "false")
+    .WithEnvironment("KC_PROXY", "edge");
 
 // Services — WaitFor ensures infrastructure is ready before services start
 var identityService = builder.AddProject<Projects.GranitMicroservice_IdentityService>("identity-service")
