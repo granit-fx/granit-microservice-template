@@ -15,6 +15,7 @@
     <PackageVersion Include="Granit.Diagnostics" Version="0.1.0-*" />
     <PackageVersion Include="Granit.EventBus" Version="0.1.0-*" />
     <PackageVersion Include="Granit.EventBus.Wolverine" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Http.Cors" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Http.Resilience" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Identity" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Identity.Keycloak" Version="0.1.0-*" />
@@ -23,7 +24,7 @@
     <PackageVersion Include="Granit.Notifications" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Observability" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Persistence" Version="0.1.0-*" />
-<PackageVersion Include="Granit.RateLimiting" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.RateLimiting" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Wolverine" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Wolverine.Postgresql" Version="0.1.0-*" />
   </ItemGroup>
@@ -49,6 +50,7 @@
   <!-- Entity Framework Core -->
   <ItemGroup Label="Entity Framework Core">
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.*" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.*" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.*" />
   </ItemGroup>

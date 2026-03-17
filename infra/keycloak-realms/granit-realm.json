@@ -65,6 +65,17 @@
         "email",
         "roles"
       ]
+    },
+    {
+      "clientId": "identity-service-admin",
+      "name": "Identity Service Admin",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "identity-admin-secret-change-in-production",
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": false
     }
   ],
   "users": [
@@ -104,6 +115,20 @@
       "realmRoles": [
         "user"
       ]
+    },
+    {
+      "username": "service-account-identity-service-admin",
+      "enabled": true,
+      "serviceAccountClientId": "identity-service-admin",
+      "clientRoles": {
+        "realm-management": [
+          "view-users",
+          "manage-users",
+          "query-users",
+          "query-realms",
+          "view-realm"
+        ]
+      }
     }
   ],
   "clientScopes": [

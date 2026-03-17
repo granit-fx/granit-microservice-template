@@ -1,27 +1,33 @@
+using Granit.Notifications.Abstractions;
+using GranitMicroservice.NotificationService.Notifications;
 using GranitMicroservice.Shared.Events;
 using Microsoft.Extensions.Logging;
 
 namespace GranitMicroservice.NotificationService.Handlers;
 
 /// <summary>
-/// Handles <see cref="CatalogProductUpdatedEvent"/> from the CatalogService.
-/// Triggers a notification when a product is updated in the catalog.
+/// Handles <see cref="CatalogProductUpdatedEvent"/> from the CatalogService
+/// and publishes an in-app notification to all subscribers of
+/// <see cref="CatalogNotifications.ProductUpdated"/>.
 /// </summary>
 public sealed partial class CatalogProductUpdatedHandler(
+    INotificationPublisher notificationPublisher,
     ILogger<CatalogProductUpdatedHandler> logger)
 {
     public async Task HandleAsync(
         CatalogProductUpdatedEvent @event,
         CancellationToken cancellationToken)
     {
-        LogProductUpdatedNotification(@event.ProductId, @event.Name);
+        LogProductUpdated(@event.ProductId, @event.Name, @event.Price);
 
-        // TODO: Phase 3 — integrate with Granit.Notifications to send notifications
-        await Task.CompletedTask;
+        await notificationPublisher.PublishToSubscribersAsync(
+            CatalogNotifications.ProductUpdated,
+            new ProductUpdatedData(@event.ProductId, @event.Name, @event.Price),
+            cancellationToken).ConfigureAwait(false);
     }
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Notification triggered for updated product {ProductId}: {ProductName}")]
-    private partial void LogProductUpdatedNotification(Guid productId, string productName);
+        Message = "Publishing ProductUpdated notification for product {ProductId}: {ProductName} at {Price:C}")]
+    private partial void LogProductUpdated(Guid productId, string productName, decimal price);
 }
