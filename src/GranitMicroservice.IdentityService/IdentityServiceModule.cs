@@ -7,7 +7,6 @@ using Granit.Identity.Endpoints;
 using Granit.Identity.EntityFrameworkCore;
 using Granit.Identity.Keycloak;
 using Granit.Persistence;
-using Granit.Persistence.Migrations;
 
 namespace GranitMicroservice.IdentityService;
 
@@ -19,6 +18,5 @@ namespace GranitMicroservice.IdentityService;
     typeof(GranitIdentityEntityFrameworkCoreModule),
     typeof(GranitIdentityKeycloakModule),
     typeof(GranitJwtBearerModule),
-    typeof(GranitPersistenceModule),
-    typeof(GranitPersistenceMigrationsModule))]
+    typeof(GranitPersistenceModule))]
 public sealed class IdentityServiceModule : GranitModule;

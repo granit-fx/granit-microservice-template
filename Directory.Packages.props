@@ -23,7 +23,6 @@
     <PackageVersion Include="Granit.Notifications" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Observability" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Persistence" Version="0.1.0-*" />
-    <PackageVersion Include="Granit.Persistence.Migrations" Version="0.1.0-*" />
     <PackageVersion Include="Granit.RateLimiting" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Wolverine" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Wolverine.Postgresql" Version="0.1.0-*" />

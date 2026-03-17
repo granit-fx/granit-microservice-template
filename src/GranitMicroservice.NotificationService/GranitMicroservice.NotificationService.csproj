@@ -3,7 +3,6 @@
   <ItemGroup>
     <PackageReference Include="Granit.Notifications" />
     <PackageReference Include="Granit.Persistence" />
-    <PackageReference Include="Granit.Persistence.Migrations" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
