@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Granit.Bundle.Essentials" />
+    <PackageReference Include="Granit.Wolverine.Postgresql" />
+    <PackageReference Include="Granit.EventBus.Wolverine" />
+    <PackageReference Include="Granit.Authentication.JwtBearer" />
+    <PackageReference Include="Granit.Caching.StackExchangeRedis" />
+    <PackageReference Include="Granit.Http.Resilience" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GranitMicroservice.ServiceDefaults\GranitMicroservice.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\GranitMicroservice.Shared\GranitMicroservice.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

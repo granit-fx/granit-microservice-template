@@ -1,7 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\GranitMicroservice.ServiceDefaults\GranitMicroservice.ServiceDefaults.csproj" />
+    <PackageReference Include="Granit.Persistence" />
+    <PackageReference Include="Granit.Persistence.Migrations" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Scalar.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GranitMicroservice.Shared.Hosting\GranitMicroservice.Shared.Hosting.csproj" />
   </ItemGroup>
 
 </Project>

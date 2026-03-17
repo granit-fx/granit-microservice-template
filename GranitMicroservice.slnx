@@ -2,6 +2,8 @@
   <Folder Name="/src/">
     <Project Path="src/GranitMicroservice.AppHost/GranitMicroservice.AppHost.csproj" />
     <Project Path="src/GranitMicroservice.ServiceDefaults/GranitMicroservice.ServiceDefaults.csproj" />
+    <Project Path="src/GranitMicroservice.Shared/GranitMicroservice.Shared.csproj" />
+    <Project Path="src/GranitMicroservice.Shared.Hosting/GranitMicroservice.Shared.Hosting.csproj" />
     <Project Path="src/GranitMicroservice.ApiGateway/GranitMicroservice.ApiGateway.csproj" />
     <Project Path="src/GranitMicroservice.IdentityService/GranitMicroservice.IdentityService.csproj" />
     <Project Path="src/GranitMicroservice.CatalogService/GranitMicroservice.CatalogService.csproj" />
