@@ -10,11 +10,6 @@ using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// GranitWolverinePostgresqlModule reads WolverinePostgresql:TransportConnectionString.
-// Aspire injects connection strings under ConnectionStrings:{name} — bridge the two.
-builder.Configuration["WolverinePostgresql:TransportConnectionString"] =
-    builder.Configuration.GetConnectionString("identity-db");
-
 await builder.AddSharedHostingAsync();
 
 await builder.AddGranitAsync(granit => granit

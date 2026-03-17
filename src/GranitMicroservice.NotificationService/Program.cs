@@ -8,11 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// GranitWolverinePostgresqlModule reads WolverinePostgresql:TransportConnectionString.
-// Aspire injects connection strings under ConnectionStrings:{name} — bridge the two.
-builder.Configuration["WolverinePostgresql:TransportConnectionString"] =
-    builder.Configuration.GetConnectionString("notification-db");
-
 await builder.AddSharedHostingAsync();
 
 await builder.AddGranitAsync(granit => granit
