@@ -33,11 +33,9 @@ jobs:
 
       - name: Authenticate to GitHub Packages
         run: |
-          dotnet nuget add source \
-            https://nuget.pkg.github.com/granit-fx/index.json \
-            --name granit-registry \
-            --username ${{ github.actor }} \
-            --password ${{ secrets.GITHUB_TOKEN }} \
+          dotnet nuget update source granit-registry \
+            --username granit-fx \
+            --password ${{ secrets.GRANIT_PACKAGES_TOKEN }} \
             --store-password-in-clear-text \
             --configfile /tmp/test-scaffold/nuget.config
 

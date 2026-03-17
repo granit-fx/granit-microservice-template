@@ -17,11 +17,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    services:
-      docker:
-        image: docker:dind
-        options: --privileged
-
     steps:
       - uses: actions/checkout@v4
 
@@ -33,8 +28,8 @@ jobs:
       - name: Authenticate to GitHub Packages
         run: |
           dotnet nuget update source granit-registry \
-            --username ${{ github.actor }} \
-            --password ${{ secrets.GITHUB_TOKEN }} \
+            --username granit-fx \
+            --password ${{ secrets.GRANIT_PACKAGES_TOKEN }} \
             --store-password-in-clear-text \
             --configfile nuget.config
 
