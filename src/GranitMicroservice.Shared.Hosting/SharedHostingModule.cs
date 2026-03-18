@@ -3,6 +3,7 @@ using Granit.Caching.StackExchangeRedis;
 using Granit.Core.Modularity;
 using Granit.EventBus.Wolverine;
 using Granit.Http.Resilience;
+using Granit.Persistence.Hosting;
 using Granit.Wolverine.Postgresql;
 
 namespace GranitMicroservice.Shared.Hosting;
@@ -16,5 +17,6 @@ namespace GranitMicroservice.Shared.Hosting;
     typeof(GranitEventBusWolverineModule),
     typeof(GranitHttpResilienceModule),
     typeof(GranitJwtBearerModule),
+    typeof(GranitPersistenceHostingModule),
     typeof(GranitWolverinePostgresqlModule))]
 public sealed class SharedHostingModule : GranitModule;

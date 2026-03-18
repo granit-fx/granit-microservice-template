@@ -3,12 +3,13 @@ using Granit.Core.Extensions;
 using Granit.Diagnostics.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Persistence.Extensions;
+using Granit.Persistence.Hosting.Extensions;
 using GranitMicroservice.CatalogService;
+using Microsoft.EntityFrameworkCore;
 using GranitMicroservice.CatalogService.Endpoints;
 using GranitMicroservice.CatalogService.Persistence;
 using GranitMicroservice.ServiceDefaults;
 using GranitMicroservice.Shared.Hosting.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -67,16 +68,14 @@ WebApplication app = builder.Build();
 // registration, Wolverine startup, …). It does NOT apply EF Core migrations.
 await app.UseGranitAsync();
 
-// ── Step 5b · EF Core migrations ─────────────────────────────────────────────
-// MigrateAsync() must complete before RunAsync() so the schema is in place when
-// DataSeedingHostedService.StartAsync() fires. The factory is scoped, so a
-// dedicated scope is required — resolving it from the root provider would throw.
-await using (var migrationScope = app.Services.CreateAsyncScope())
+// ── Step 5b · Database migrations (--migrate CLI flag) ───────────────────────
+// Run `docker run myapp --migrate` (or `dotnet run -- --migrate`) in CI/CD or
+// a K8s init container to apply pending EF Core migrations and seed data.
+// In normal startup, this block is skipped entirely.
+if (app.HasGranitMigrateFlag())
 {
-    var factory = migrationScope.ServiceProvider
-        .GetRequiredService<IDbContextFactory<CatalogDbContext>>();
-    await using var db = await factory.CreateDbContextAsync();
-    await db.Database.MigrateAsync();
+    await app.RunGranitMigrationsAsync();
+    return;
 }
 
 // UseGranitExceptionHandling wraps the entire HTTP pipeline in a try/catch that

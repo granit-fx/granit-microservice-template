@@ -6,11 +6,12 @@ using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.EntityFrameworkCore.Extensions;
 using Granit.Identity.Keycloak.Extensions;
 using Granit.Persistence.Extensions;
+using Granit.Persistence.Hosting.Extensions;
 using GranitMicroservice.IdentityService;
+using Microsoft.EntityFrameworkCore;
 using GranitMicroservice.IdentityService.Persistence;
 using GranitMicroservice.ServiceDefaults;
 using GranitMicroservice.Shared.Hosting.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -64,13 +65,13 @@ WebApplication app = builder.Build();
 // apply EF Core migrations.
 await app.UseGranitAsync();
 
-// ── Step 6b · EF Core migrations ─────────────────────────────────────────────
-await using (var migrationScope = app.Services.CreateAsyncScope())
+// ── Step 6b · Database migrations (--migrate CLI flag) ───────────────────────
+// Run `docker run myapp --migrate` in CI/CD or a K8s init container.
+// In normal startup, this block is skipped entirely.
+if (app.HasGranitMigrateFlag())
 {
-    var factory = migrationScope.ServiceProvider
-        .GetRequiredService<IDbContextFactory<IdentityServiceDbContext>>();
-    await using var db = await factory.CreateDbContextAsync();
-    await db.Database.MigrateAsync();
+    await app.RunGranitMigrationsAsync();
+    return;
 }
 
 // UseGranitExceptionHandling maps unhandled exceptions to RFC 7807 Problem
