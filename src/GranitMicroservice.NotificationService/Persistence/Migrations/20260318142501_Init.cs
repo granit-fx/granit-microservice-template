@@ -1,0 +1,182 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace GranitMicroservice.NotificationService.Persistence.Migrations
+{
+    /// <inheritdoc />
+    public partial class Init : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "notification_delivery_attempts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DeliveryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NotificationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NotificationTypeName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    ChannelName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    RecipientUserId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    OccurredAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DurationMs = table.Column<long>(type: "bigint", nullable: false),
+                    ErrorMessage = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    IsSuccess = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_notification_delivery_attempts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "notification_mobile_push_tokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    DeviceToken = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    Platform = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_notification_mobile_push_tokens", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "notification_preferences",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    NotificationTypeName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    ChannelName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_notification_preferences", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "notification_subscriptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    NotificationTypeName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EntityType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EntityId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_notification_subscriptions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "notification_user_notifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    NotificationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NotificationTypeName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Severity = table.Column<int>(type: "integer", nullable: false),
+                    RecipientUserId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Data = table.Column<string>(type: "text", nullable: false),
+                    State = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    ReadAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    RelatedEntityType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    RelatedEntityId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_notification_user_notifications", x => x.Id);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_notification_delivery_attempts_audit",
+                table: "notification_delivery_attempts",
+                columns: new[] { "TenantId", "OccurredAt" },
+                descending: new[] { false, true });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_notification_delivery_attempts_notification",
+                table: "notification_delivery_attempts",
+                columns: new[] { "NotificationId", "ChannelName" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_notification_mobile_push_tokens_user_tenant",
+                table: "notification_mobile_push_tokens",
+                columns: new[] { "UserId", "TenantId" });
+
+            migrationBuilder.CreateIndex(
+                name: "uq_notification_mobile_push_tokens_device_tenant",
+                table: "notification_mobile_push_tokens",
+                columns: new[] { "DeviceToken", "TenantId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "uq_notification_preferences_user_type_channel_tenant",
+                table: "notification_preferences",
+                columns: new[] { "UserId", "NotificationTypeName", "ChannelName", "TenantId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_notification_subscriptions_entity",
+                table: "notification_subscriptions",
+                columns: new[] { "EntityType", "EntityId", "TenantId" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_notification_subscriptions_global",
+                table: "notification_subscriptions",
+                columns: new[] { "UserId", "NotificationTypeName", "TenantId" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_notification_user_notifications_entity_feed",
+                table: "notification_user_notifications",
+                columns: new[] { "RelatedEntityType", "RelatedEntityId", "TenantId", "CreatedAt" },
+                descending: new[] { false, false, false, true });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_notification_user_notifications_inbox",
+                table: "notification_user_notifications",
+                columns: new[] { "RecipientUserId", "TenantId", "State", "CreatedAt" },
+                descending: new[] { false, false, false, true });
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "notification_delivery_attempts");
+
+            migrationBuilder.DropTable(
+                name: "notification_mobile_push_tokens");
+
+            migrationBuilder.DropTable(
+                name: "notification_preferences");
+
+            migrationBuilder.DropTable(
+                name: "notification_subscriptions");
+
+            migrationBuilder.DropTable(
+                name: "notification_user_notifications");
+        }
+    }
+}

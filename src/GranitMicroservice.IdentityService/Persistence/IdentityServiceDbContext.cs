@@ -18,6 +18,7 @@ public sealed class IdentityServiceDbContext(
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityServiceDbContext).Assembly);
+        modelBuilder.ConfigureIdentityModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

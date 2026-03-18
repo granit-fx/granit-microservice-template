@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GranitMicroservice.IdentityService.Persistence.Migrations
 {
     [DbContext(typeof(IdentityServiceDbContext))]
-    [Migration("20260317224524_Init")]
+    [Migration("20260318142442_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -39,20 +39,24 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .HasColumnType("text");
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
 
                     b.Property<string>("ExternalUserId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTimeOffset>("LastSyncedAt")
                         .HasColumnType("timestamp with time zone");
@@ -67,11 +71,25 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Username")
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserCacheEntries");
+                    b.HasIndex("TenantId", "Email")
+                        .HasDatabaseName("ix_identity_user_cache_tenant_email");
+
+                    b.HasIndex("TenantId", "ExternalUserId")
+                        .IsUnique()
+                        .HasDatabaseName("uq_identity_user_cache_tenant_external_id");
+
+                    b.HasIndex("TenantId", "Username")
+                        .HasDatabaseName("ix_identity_user_cache_tenant_username");
+
+                    b.HasIndex("TenantId", "LastName", "FirstName")
+                        .HasDatabaseName("ix_identity_user_cache_tenant_name");
+
+                    b.ToTable("identity_user_cache_entries", (string)null);
                 });
 #pragma warning restore 612, 618
         }
