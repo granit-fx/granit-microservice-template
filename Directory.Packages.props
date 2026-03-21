@@ -22,6 +22,7 @@
     <PackageVersion Include="Granit.Identity.EntityFrameworkCore" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Identity.Endpoints" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Notifications" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Notifications.EntityFrameworkCore" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Observability" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Persistence" Version="0.1.0-*" />
     <PackageVersion Include="Granit.RateLimiting" Version="0.1.0-*" />

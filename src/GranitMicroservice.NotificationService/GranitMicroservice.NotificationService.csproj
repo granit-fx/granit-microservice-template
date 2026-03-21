@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <!-- CA1861 fires on EF Core generated migration code (IsDescending arrays) -->
+    <NoWarn>$(NoWarn);CA1861</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Granit.Notifications" />
+    <PackageReference Include="Granit.Notifications.EntityFrameworkCore" />
     <PackageReference Include="Granit.Persistence" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
