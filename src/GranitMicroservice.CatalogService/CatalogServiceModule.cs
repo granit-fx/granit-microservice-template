@@ -2,6 +2,7 @@ using Granit.Core.Modularity;
 using Granit.Persistence;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.Extensions;
+using Granit.Persistence.Hosting;
 using Granit.RateLimiting;
 using Granit.Validation;
 using Granit.Validation.Extensions;
@@ -13,7 +14,7 @@ namespace GranitMicroservice.CatalogService;
     typeof(GranitPersistenceModule),
     typeof(GranitRateLimitingModule),
     typeof(GranitValidationModule))]
-public sealed class CatalogServiceModule : GranitModule
+public sealed class CatalogServiceModule : GranitModule, IMigratableModule<CatalogDbContext>
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

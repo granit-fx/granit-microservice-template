@@ -3,11 +3,12 @@ using Granit.Core.Extensions;
 using Granit.Diagnostics.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Persistence.Extensions;
+using Granit.Persistence.Hosting.Extensions;
 using GranitMicroservice.NotificationService;
+using Microsoft.EntityFrameworkCore;
 using GranitMicroservice.NotificationService.Persistence;
 using GranitMicroservice.ServiceDefaults;
 using GranitMicroservice.Shared.Hosting.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -49,13 +50,13 @@ WebApplication app = builder.Build();
 // startup, …). It does NOT apply EF Core migrations.
 await app.UseGranitAsync();
 
-// ── Step 4b · EF Core migrations ─────────────────────────────────────────────
-await using (var migrationScope = app.Services.CreateAsyncScope())
+// ── Step 4b · Database migrations (--migrate CLI flag) ───────────────────────
+// Run `docker run myapp --migrate` in CI/CD or a K8s init container.
+// In normal startup, this block is skipped entirely.
+if (app.HasGranitMigrateFlag())
 {
-    var factory = migrationScope.ServiceProvider
-        .GetRequiredService<IDbContextFactory<NotificationServiceDbContext>>();
-    await using var db = await factory.CreateDbContextAsync();
-    await db.Database.MigrateAsync();
+    await app.RunGranitMigrationsAsync();
+    return;
 }
 
 // UseGranitExceptionHandling maps unhandled exceptions to RFC 7807 Problem
