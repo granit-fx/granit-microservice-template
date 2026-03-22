@@ -1,12 +1,11 @@
-using Granit.Caching;
 using Granit.Core.Events;
 using Granit.RateLimiting.AspNetCore;
-using GranitMicroservice.CatalogService.Cache;
 using GranitMicroservice.CatalogService.Domain;
 using GranitMicroservice.CatalogService.Persistence;
 using GranitMicroservice.Shared.Events;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace GranitMicroservice.CatalogService.Endpoints;
 
@@ -50,13 +49,14 @@ public static class ProductEndpoints
     private static async Task<Results<Ok<CatalogProductResponse>, ProblemHttpResult>> GetProduct(
         Guid id,
         CatalogDbContext db,
-        ICacheService<ProductCacheItem, Guid> cache,
+        IFusionCache cache,
         CancellationToken cancellationToken)
     {
-        // Cache-aside: serve from Redis, fall back to the database on a miss.
-        var cached = await cache.GetAsync(id, cancellationToken);
-        if (cached is not null)
-            return TypedResults.Ok(MapFromCacheItem(cached));
+        var cacheKey = $"product:{id}";
+        var cached = await cache.TryGetAsync<CatalogProductResponse>(cacheKey, token: cancellationToken);
+
+        if (cached.HasValue)
+            return TypedResults.Ok(cached.Value);
 
         var product = await db.Products
             .Include(p => p.Category)
@@ -69,8 +69,9 @@ public static class ProductEndpoints
                 statusCode: StatusCodes.Status404NotFound);
         }
 
-        await cache.SetAsync(id, MapToCacheItem(product), cancellationToken: cancellationToken);
-        return TypedResults.Ok(MapToResponse(product));
+        var response = MapToResponse(product);
+        await cache.SetAsync(cacheKey, response, token: cancellationToken);
+        return TypedResults.Ok(response);
     }
 
     private static async Task<Results<Created<CatalogProductResponse>, ProblemHttpResult>> CreateProduct(
@@ -118,7 +119,7 @@ public static class ProductEndpoints
         UpdateCatalogProductRequest request,
         CatalogDbContext db,
         IDistributedEventBus eventBus,
-        ICacheService<ProductCacheItem, Guid> cache,
+        IFusionCache cache,
         CancellationToken cancellationToken)
     {
         var product = await db.Products
@@ -143,7 +144,7 @@ public static class ProductEndpoints
             new CatalogProductUpdatedEvent(product.Id, product.Name, product.Price),
             cancellationToken);
 
-        await cache.RemoveAsync(id, cancellationToken);
+        await cache.RemoveAsync($"product:{id}", token: cancellationToken);
 
         return TypedResults.Ok(MapToResponse(product));
     }
@@ -151,7 +152,7 @@ public static class ProductEndpoints
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteProduct(
         Guid id,
         CatalogDbContext db,
-        ICacheService<ProductCacheItem, Guid> cache,
+        IFusionCache cache,
         CancellationToken cancellationToken)
     {
         var product = await db.Products
@@ -167,7 +168,7 @@ public static class ProductEndpoints
         db.Products.Remove(product);
         await db.SaveChangesAsync(cancellationToken);
 
-        await cache.RemoveAsync(id, cancellationToken);
+        await cache.RemoveAsync($"product:{id}", token: cancellationToken);
 
         return TypedResults.NoContent();
     }
@@ -183,20 +184,4 @@ public static class ProductEndpoints
             product.CreatedAt,
             product.ModifiedAt);
 
-    private static ProductCacheItem MapToCacheItem(Product product) =>
-        new()
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Description = product.Description,
-            Price = product.Price,
-            CategoryId = product.CategoryId,
-            CategoryName = product.Category?.Name,
-            CreatedAt = product.CreatedAt,
-            ModifiedAt = product.ModifiedAt,
-        };
-
-    private static CatalogProductResponse MapFromCacheItem(ProductCacheItem item) =>
-        new(item.Id, item.Name, item.Description, item.Price,
-            item.CategoryId, item.CategoryName, item.CreatedAt, item.ModifiedAt);
 }
