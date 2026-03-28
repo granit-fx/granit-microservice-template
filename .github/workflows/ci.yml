@@ -1,3 +1,12 @@
+# =============================================================================
+# GitHub Actions CI/CD - Granit Microservice Template
+# =============================================================================
+# Pipeline: build+test → security → sbom
+#
+# Required secrets:
+#   GRANIT_PACKAGES_TOKEN — GitHub Packages token for the Granit.* NuGet feed
+# =============================================================================
+
 name: CI
 
 on:
@@ -6,31 +15,42 @@ on:
   pull_request:
     branches: [main, develop]
 
-permissions:
-  contents: read
-  packages: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Default all permissions to read — each job declares write only where needed.
+# Required by OpenSSF Scorecard: Token-Permissions check.
+permissions: read-all
 
 env:
   DOTNET_NOLOGO: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # BUILD + TEST
+  # ---------------------------------------------------------------------------
   build-and-test:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
         with:
           global-json-file: global.json
 
       - name: Authenticate to GitHub Packages
+        env:
+          GRANIT_PACKAGES_TOKEN: ${{ secrets.GRANIT_PACKAGES_TOKEN }}
         run: |
           dotnet nuget update source granit-registry \
             --username granit-fx \
-            --password ${{ secrets.GRANIT_PACKAGES_TOKEN }} \
+            --password "$GRANIT_PACKAGES_TOKEN" \
             --store-password-in-clear-text \
             --configfile nuget.config
 
@@ -53,3 +73,102 @@ jobs:
           --no-build
           --filter "FullyQualifiedName~Integration"
           --logger "trx;LogFileName=integration-tests.trx"
+
+  # ---------------------------------------------------------------------------
+  # SECURITY (parallel, no build dependency)
+  # ---------------------------------------------------------------------------
+  secret-detection:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Gitleaks
+        run: |
+          GITLEAKS_VERSION=8.30.0
+          curl --proto '=https' -sSfL \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+
+      - name: Gitleaks scan
+        run: gitleaks detect --source . --verbose --log-opts="--all"
+
+  audit:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+        with:
+          global-json-file: global.json
+
+      - name: Authenticate to GitHub Packages
+        env:
+          GRANIT_PACKAGES_TOKEN: ${{ secrets.GRANIT_PACKAGES_TOKEN }}
+        run: |
+          dotnet nuget update source granit-registry \
+            --username granit-fx \
+            --password "$GRANIT_PACKAGES_TOKEN" \
+            --store-password-in-clear-text \
+            --configfile nuget.config
+
+      - name: Check vulnerable packages
+        run: |
+          dotnet restore GranitMicroservice.slnx
+          dotnet list GranitMicroservice.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
+          ! grep -q "has the following vulnerable packages" vulnerability-report.txt
+
+      - name: Upload vulnerability report
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: vulnerability-report
+          path: vulnerability-report.txt
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # SBOM — CycloneDX JSON, uploaded as artifact
+  # ---------------------------------------------------------------------------
+  sbom:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+        with:
+          global-json-file: global.json
+
+      - name: Authenticate to GitHub Packages
+        env:
+          GRANIT_PACKAGES_TOKEN: ${{ secrets.GRANIT_PACKAGES_TOKEN }}
+        run: |
+          dotnet nuget update source granit-registry \
+            --username granit-fx \
+            --password "$GRANIT_PACKAGES_TOKEN" \
+            --store-password-in-clear-text \
+            --configfile nuget.config
+
+      - name: Install CycloneDX
+        run: dotnet tool install --global CycloneDX
+
+      - name: Generate SBOM
+        run: dotnet CycloneDX GranitMicroservice.slnx -o ./sbom --json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: sbom
+          path: sbom/bom.json
+          retention-days: 90

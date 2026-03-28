@@ -5,10 +5,8 @@ on:
   schedule:
     - cron: "0 6 * * 1" # Weekly Monday 06:00 UTC
 
-permissions:
-  contents: read
-  packages: read
-  issues: write
+# Default all permissions to read — validate-template overrides issues: write.
+permissions: read-all
 
 env:
   DOTNET_NOLOGO: true
@@ -17,12 +15,16 @@ env:
 jobs:
   validate-template:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      issues: write  # required for "Create issue on failure" step
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
         with:
           global-json-file: global.json
 
@@ -33,10 +35,12 @@ jobs:
         run: dotnet new granit-microservice -n TestScaffold -o /tmp/test-scaffold
 
       - name: Authenticate to GitHub Packages
+        env:
+          GRANIT_PACKAGES_TOKEN: ${{ secrets.GRANIT_PACKAGES_TOKEN }}
         run: |
           dotnet nuget update source granit-registry \
             --username granit-fx \
-            --password ${{ secrets.GRANIT_PACKAGES_TOKEN }} \
+            --password "$GRANIT_PACKAGES_TOKEN" \
             --store-password-in-clear-text \
             --configfile /tmp/test-scaffold/nuget.config
 
@@ -53,7 +57,7 @@ jobs:
 
       - name: Create issue on failure
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             await github.rest.issues.create({
