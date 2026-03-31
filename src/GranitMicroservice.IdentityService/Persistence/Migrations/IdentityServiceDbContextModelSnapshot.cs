@@ -22,7 +22,7 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Granit.Identity.EntityFrameworkCore.Entities.UserCacheEntry", b =>
+            modelBuilder.Entity("Granit.Identity.Federated.EntityFrameworkCore.Entities.UserCacheEntry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,6 +46,9 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<string>("ExtraPropertiesJson")
+                        .HasColumnType("text");
 
                     b.Property<string>("FirstName")
                         .HasMaxLength(256)

@@ -1,9 +1,10 @@
 using Granit.Caching.StackExchangeRedis.Extensions;
-using Granit.Core.Extensions;
+using Granit.Extensions;
 using Granit.Diagnostics.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
-using Granit.Persistence.Extensions;
-using Granit.Persistence.Hosting.Extensions;
+using Granit.Http.SecurityHeaders.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
 using GranitMicroservice.CatalogService;
 using Microsoft.EntityFrameworkCore;
 using GranitMicroservice.CatalogService.Endpoints;
@@ -29,7 +30,7 @@ await builder.AddSharedHostingAsync();
 // AddGranitDbContextHealthCheck — EF Core CanConnectAsync() through the same
 //   DbContext configuration as production (connection pool, Npgsql options).
 // AddGranitRedisHealthCheck — Redis PING via IConnectionMultiplexer already
-//   registered by GranitCachingRedisModule; includes a 100ms degraded threshold.
+//   registered by GranitCachingStackExchangeRedisModule; includes a 100ms degraded threshold.
 // AddRabbitMqHealthCheck — opens a dedicated health-check connection from the
 //   Aspire AMQP URI (amqp://user:pass@host:port/).
 builder.Services.AddHealthChecks()
@@ -84,6 +85,7 @@ if (app.HasGranitMigrateFlag())
 // (e.g., DI, correlation IDs). 5xx details are masked in non-Development
 // environments (ISO 27001 compliance — no internal paths/SQL in responses).
 app.UseGranitExceptionHandling();
+app.UseGranitSecurityHeaders();
 
 // ── Step 6 · Endpoint mapping ─────────────────────────────────────────────────
 // MapGranitHealthChecks → /health/live (always 200), /health/ready (readiness

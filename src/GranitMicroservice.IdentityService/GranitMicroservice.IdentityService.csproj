@@ -6,13 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Granit.Authentication.Keycloak" />
+    <PackageReference Include="Granit.Authentication.JwtBearer.Keycloak" />
     <PackageReference Include="Granit.Authorization" />
     <PackageReference Include="Granit.Identity" />
-    <PackageReference Include="Granit.Identity.Keycloak" />
-    <PackageReference Include="Granit.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Granit.Identity.Federated.Keycloak" />
+    <PackageReference Include="Granit.Identity.Federated.EntityFrameworkCore" />
     <PackageReference Include="Granit.Identity.Endpoints" />
-    <PackageReference Include="Granit.Persistence" />
+    <PackageReference Include="Granit.Persistence.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />

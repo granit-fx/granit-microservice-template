@@ -23,19 +23,21 @@
   "clients": [
     {
       "clientId": "granit-gateway",
-      "name": "Granit API Gateway",
+      "name": "Granit API Gateway (BFF)",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": false,
       "secret": "gateway-secret-change-in-production",
-      "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
       "authorizationServicesEnabled": false,
       "redirectUris": [
-        "https://localhost:*/*"
+        "http://localhost:5000/bff/callback",
+        "https://localhost:5000/bff/callback"
       ],
       "webOrigins": [
-        "https://localhost"
+        "http://localhost:5000",
+        "https://localhost:5000"
       ],
       "defaultClientScopes": [
         "openid",

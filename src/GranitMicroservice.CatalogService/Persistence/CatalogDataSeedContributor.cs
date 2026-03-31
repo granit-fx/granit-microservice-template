@@ -1,4 +1,4 @@
-using Granit.Persistence.DataSeeding;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using GranitMicroservice.CatalogService.Domain;
 using Microsoft.EntityFrameworkCore;
 

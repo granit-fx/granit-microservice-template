@@ -6,26 +6,28 @@
 
   <!-- Granit framework -->
   <ItemGroup Label="Granit">
-    <PackageVersion Include="Granit.Core" Version="0.1.0-*" />
+    <PackageVersion Include="Granit" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Bundle.Essentials" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Authentication.JwtBearer" Version="0.1.0-*" />
-    <PackageVersion Include="Granit.Authentication.Keycloak" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Bff.Endpoints" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Bff.Yarp" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Authentication.JwtBearer.Keycloak" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Authorization" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Caching.StackExchangeRedis" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Diagnostics" Version="0.1.0-*" />
-    <PackageVersion Include="Granit.EventBus" Version="0.1.0-*" />
-    <PackageVersion Include="Granit.EventBus.Wolverine" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Events" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Events.Wolverine" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Http.Cors" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Http.Resilience" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Identity" Version="0.1.0-*" />
-    <PackageVersion Include="Granit.Identity.Keycloak" Version="0.1.0-*" />
-    <PackageVersion Include="Granit.Identity.EntityFrameworkCore" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Identity.Federated.Keycloak" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Identity.Federated.EntityFrameworkCore" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Identity.Endpoints" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Notifications" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Notifications.EntityFrameworkCore" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Observability" Version="0.1.0-*" />
-    <PackageVersion Include="Granit.Persistence" Version="0.1.0-*" />
-    <PackageVersion Include="Granit.Persistence.Hosting" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Persistence.EntityFrameworkCore" Version="0.1.0-*" />
+    <PackageVersion Include="Granit.Persistence.EntityFrameworkCore.Hosting" Version="0.1.0-*" />
     <PackageVersion Include="Granit.RateLimiting" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Wolverine" Version="0.1.0-*" />
     <PackageVersion Include="Granit.Wolverine.Postgresql" Version="0.1.0-*" />

@@ -50,7 +50,7 @@ public static class Extensions
 
         app.MapHealthChecks("/health/ready", new HealthCheckOptions
         {
-            // Accept both "ready" (our convention) and "readiness" (Granit.Persistence convention).
+            // Accept both "ready" (our convention) and "readiness" (Granit.Persistence.EntityFrameworkCore convention).
             Predicate = r => r.Tags.Contains("ready") || r.Tags.Contains("readiness"),
         });
 

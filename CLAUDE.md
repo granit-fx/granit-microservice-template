@@ -64,7 +64,7 @@ dotnet build /tmp/acme/Acme.Platform.slnx
 
 Cross-cutting concerns ONLY. Allowed packages:
 
-- `Granit.Core`, `Granit.Bundle.Essentials`
+- `Granit`, `Granit.Bundle.Essentials`
 - `Granit.Wolverine.Postgresql`, `Granit.EventBus.Wolverine`
 - `Granit.Authentication.JwtBearer`
 - `Granit.Caching.StackExchangeRedis`

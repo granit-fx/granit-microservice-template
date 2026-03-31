@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <PackageReference Include="Granit.Persistence" />
+    <PackageReference Include="Granit.Persistence.EntityFrameworkCore" />
     <PackageReference Include="Granit.RateLimiting" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />

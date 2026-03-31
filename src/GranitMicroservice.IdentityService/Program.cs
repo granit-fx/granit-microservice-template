@@ -1,12 +1,13 @@
 using Granit.Caching.StackExchangeRedis.Extensions;
-using Granit.Core.Extensions;
+using Granit.Extensions;
 using Granit.Diagnostics.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
+using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Endpoints.Extensions;
-using Granit.Identity.EntityFrameworkCore.Extensions;
-using Granit.Identity.Keycloak.Extensions;
-using Granit.Persistence.Extensions;
-using Granit.Persistence.Hosting.Extensions;
+using Granit.Identity.Federated.EntityFrameworkCore.Extensions;
+using Granit.Identity.Federated.Keycloak.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
 using GranitMicroservice.IdentityService;
 using Microsoft.EntityFrameworkCore;
 using GranitMicroservice.IdentityService.Persistence;
@@ -35,7 +36,7 @@ builder.AddRabbitMqHealthCheck();
 // ── Step 2 · Service-specific Granit modules ──────────────────────────────────
 // IdentityServiceModule registers the Keycloak admin integration, user cache
 // management, and related Wolverine handlers (e.g., UserSyncedHandler).
-// It depends on GranitAuthenticationKeycloakModule, which is resolved
+// It depends on GranitAuthenticationJwtBearerKeycloakModule, which is resolved
 // automatically by the Granit module system via [DependsOn].
 await builder.AddGranitAsync(granit => granit
     .AddModule<IdentityServiceModule>());
@@ -77,6 +78,7 @@ if (app.HasGranitMigrateFlag())
 // UseGranitExceptionHandling maps unhandled exceptions to RFC 7807 Problem
 // Details responses. 5xx details masked in non-Development (ISO 27001).
 app.UseGranitExceptionHandling();
+app.UseGranitSecurityHeaders();
 
 // ── Step 7 · Endpoint mapping ─────────────────────────────────────────────────
 // MapGranitHealthChecks → /health/live (always 200), /health/ready (readiness

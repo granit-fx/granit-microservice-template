@@ -6,9 +6,9 @@
 
   <ItemGroup>
     <PackageReference Include="Granit.Bundle.Essentials" />
-    <PackageReference Include="Granit.Persistence.Hosting" />
+    <PackageReference Include="Granit.Persistence.EntityFrameworkCore.Hosting" />
     <PackageReference Include="Granit.Wolverine.Postgresql" />
-    <PackageReference Include="Granit.EventBus.Wolverine" />
+    <PackageReference Include="Granit.Events.Wolverine" />
     <PackageReference Include="Granit.Authentication.JwtBearer" />
     <PackageReference Include="Granit.Caching.StackExchangeRedis" />
     <PackageReference Include="Granit.Http.Resilience" />

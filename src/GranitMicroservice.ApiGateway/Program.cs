@@ -1,9 +1,9 @@
-using System.Security.Claims;
-using System.Threading.RateLimiting;
+using Granit.Bff.Endpoints.Extensions;
+using Granit.Bff.Options;
+using Granit.Bff.Yarp.Extensions;
 using Granit.Http.Cors.Extensions;
 using GranitMicroservice.ServiceDefaults;
 using Scalar.AspNetCore;
-using Yarp.ReverseProxy.Configuration;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -15,158 +15,68 @@ builder.AddServiceDefaults();
 
 // ── Step 1b · CORS ────────────────────────────────────────────────────────────
 // AddGranitCors reads Cors:AllowedOrigins from configuration and registers
-// a default policy. Wildcard (*) is rejected at startup in non-development
-// environments (ISO 27001 compliance). AllowAnyHeader + AllowAnyMethod is
-// intentional — origin restriction is the relevant control for REST APIs.
-// app.UseCors() is placed before authentication in the middleware pipeline
-// so preflight OPTIONS requests are handled without needing a valid token.
+// a default policy. In BFF mode, CORS is less critical (same-origin cookies),
+// but still needed for health probes and service-to-service preflight.
 builder.AddGranitCors();
 
-
-// ── Step 2 · YARP reverse proxy ───────────────────────────────────────────────
-// YARP (Yet Another Reverse Proxy) routes inbound requests from external clients
-// to the correct backend service. Routes are loaded in-memory here for simplicity;
-// production setups can load them from configuration or a database at runtime.
+// ── Step 2 · BFF reverse proxy ──────────────────────────────────────────────
+// Replaces the previous JWT Bearer + inline YARP setup with a BFF pattern.
+// The gateway handles OIDC authorization code flow with Keycloak, stores tokens
+// server-side in Redis (via IDistributedCache), and injects Bearer tokens into
+// proxied requests. The SPA never sees or stores tokens — only an HttpOnly cookie.
 //
 // Route flow example:
-//   Client → GET /api/catalog/products
-//   Gateway removes the /api/catalog prefix
-//   → forwarded as GET /products to catalog-service
+//   Client → GET /api/catalog/products (with session cookie)
+//   BFF reads cookie → resolves tokens from cache → injects Authorization: Bearer
+//   YARP removes the /api/catalog prefix
+//   → forwarded as GET /products to catalog-service (with Bearer token)
 //
-// "https+http://..." tells Aspire to prefer HTTPS but fall back to HTTP.
-// Aspire injects the actual service addresses via service discovery.
-builder.Services.AddReverseProxy()
-    .LoadFromMemory(
-    [
-        new RouteConfig
-        {
-            RouteId = "catalog",
-            ClusterId = "catalog",
-            AuthorizationPolicy = "default",
-            Match = new RouteMatch { Path = "/api/catalog/{**catch-all}" },
-            Transforms =
-            [
-                new Dictionary<string, string> { ["PathRemovePrefix"] = "/api/catalog" },
-            ],
-        },
-        new RouteConfig
-        {
-            RouteId = "identity",
-            ClusterId = "identity",
-            AuthorizationPolicy = "default",
-            Match = new RouteMatch { Path = "/api/identity/{**catch-all}" },
-            Transforms =
-            [
-                new Dictionary<string, string> { ["PathRemovePrefix"] = "/api/identity" },
-            ],
-        },
-    ],
-    [
-        new ClusterConfig
-        {
-            ClusterId = "catalog",
-            Destinations = new Dictionary<string, DestinationConfig>
-            {
-                ["default"] = new() { Address = "https+http://catalog-service" },
-            },
-        },
-        new ClusterConfig
-        {
-            ClusterId = "identity",
-            Destinations = new Dictionary<string, DestinationConfig>
-            {
-                ["default"] = new() { Address = "https+http://identity-service" },
-            },
-        },
-    ]);
+// YARP routes are loaded from appsettings.json ReverseProxy section.
+// Each route with Granit.Bff.RequireAuth=true gets automatic token injection.
+builder.AddGranitBffYarp();
 
-// ── Step 3 · Authentication ───────────────────────────────────────────────────
-// The gateway validates JWT Bearer tokens issued by Keycloak before forwarding
-// requests. Individual services trust the gateway and do not re-validate tokens
-// (defense-in-depth: services are not exposed directly outside the cluster).
-// RequireHttpsMetadata=false is intentional for dev — Aspire manages TLS.
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
-    {
-        options.Authority = builder.Configuration["Authentication:Authority"];
-        options.Audience = builder.Configuration["Authentication:Audience"];
-        options.RequireHttpsMetadata = false; // dev only — Aspire manages TLS
-    });
-
-builder.Services.AddAuthorization();
+// ── Step 3 · BFF configuration ──────────────────────────────────────────────
+// Configure the BFF frontend (OIDC client talking to Keycloak).
+// Authority, ClientId, ClientSecret, Scopes are bound from Bff section.
+builder.Services.Configure<GranitBffOptions>(
+    builder.Configuration.GetSection(GranitBffOptions.SectionName));
 
 // ── Step 4 · OpenAPI aggregation clients ─────────────────────────────────────
-// Named HttpClients are used in Steps 7–8 to proxy each service's OpenAPI spec
-// and surface them in a unified Scalar UI (one explorer for the whole platform).
+// Named HttpClients proxy each service's OpenAPI spec for a unified Scalar UI.
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient("catalog", c => c.BaseAddress = new Uri("https+http://catalog-service"));
 builder.Services.AddHttpClient("identity", c => c.BaseAddress = new Uri("https+http://identity-service"));
 
-// ── Step 5 · Rate limiting ────────────────────────────────────────────────────
-// Sliding-window rate limiter partitioned per authenticated user (JWT sub claim).
-// Falls back to client IP for unauthenticated requests (public endpoints, probes).
-// HTTP 429 is returned when the limit is exceeded (standard REST convention).
-// Per-user partitioning prevents a single compromised or abusive account from
-// degrading service for all other users sharing the same IP (NAT, VPN, proxies).
-builder.Services.AddRateLimiter(options =>
-{
-    options.AddPolicy("default", context =>
-        RateLimitPartition.GetSlidingWindowLimiter(
-            partitionKey: context.User.FindFirstValue(ClaimTypes.NameIdentifier)
-                          ?? context.Connection.RemoteIpAddress?.ToString()
-                          ?? "anonymous",
-            factory: _ => new SlidingWindowRateLimiterOptions
-            {
-                PermitLimit = 100,
-                Window = TimeSpan.FromMinutes(1),
-                SegmentsPerWindow = 6,
-                QueueLimit = 0,
-            }));
-
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-});
-
 WebApplication app = builder.Build();
 
-// ── Step 6 · Middleware pipeline ──────────────────────────────────────────────
+// ── Step 5 · Middleware pipeline ──────────────────────────────────────────────
 // Order matters:
-//   1. Health endpoints — must respond even before auth/rate-limiting
-//   2. CORS            → preflight OPTIONS handled before token validation
-//   3. Authentication  → populates HttpContext.User
-//   4. Authorization   → enforces policies defined on YARP routes
-//   5. RateLimiter     → applied after auth so per-user limits are possible
-//   6. ReverseProxy    → forwards the request to the target cluster
+//   1. Health endpoints — must respond even before auth
+//   2. CORS            → preflight OPTIONS handled before cookie validation
+//   3. BFF YARP        → reads session cookie, injects token, proxies to services
+//   4. BFF endpoints   → /bff/login, /bff/logout, /bff/user, /bff/sessions
 app.MapDefaultEndpoints();
 
 app.UseCors();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseRateLimiter();
+app.UseGranitBffYarp();
+app.MapGranitBffEndpoints();
 
-app.MapReverseProxy();
-
-// ── Step 7 · OpenAPI spec passthrough ─────────────────────────────────────────
-// Each endpoint below fetches the raw OpenAPI JSON from the corresponding service
-// and serves it under a stable gateway URL. ExcludeFromDescription() hides these
-// plumbing routes from the gateway's own spec (they belong to each service spec).
+// ── Step 6 · OpenAPI spec passthrough ─────────────────────────────────────────
 app.MapGet("/openapi/catalog.json", async (IHttpClientFactory factory) =>
 {
-    var client = factory.CreateClient("catalog");
-    var spec = await client.GetStringAsync("/openapi/v1.json");
+    HttpClient client = factory.CreateClient("catalog");
+    string spec = await client.GetStringAsync("/openapi/v1.json");
     return Results.Content(spec, "application/json");
 }).ExcludeFromDescription();
 
 app.MapGet("/openapi/identity.json", async (IHttpClientFactory factory) =>
 {
-    var client = factory.CreateClient("identity");
-    var spec = await client.GetStringAsync("/openapi/v1.json");
+    HttpClient client = factory.CreateClient("identity");
+    string spec = await client.GetStringAsync("/openapi/v1.json");
     return Results.Content(spec, "application/json");
 }).ExcludeFromDescription();
 
-// ── Step 8 · Unified Scalar UI ────────────────────────────────────────────────
-// A single interactive explorer at /scalar aggregates all service specs.
-// Developers can browse and test every API from one place, authenticated
-// through the gateway — exactly as a real client would interact.
+// ── Step 7 · Unified Scalar UI ────────────────────────────────────────────────
 app.MapOpenApi();
 app.MapScalarApiReference(options =>
 {
