@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Granit.Core" />
+    <PackageReference Include="Granit" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,10 @@
 using Granit.Caching.StackExchangeRedis.Extensions;
-using Granit.Core.Extensions;
+using Granit.Extensions;
 using Granit.Diagnostics.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
-using Granit.Persistence.Extensions;
-using Granit.Persistence.Hosting.Extensions;
+using Granit.Http.SecurityHeaders.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
 using GranitMicroservice.NotificationService;
 using Microsoft.EntityFrameworkCore;
 using GranitMicroservice.NotificationService.Persistence;
@@ -62,6 +63,7 @@ if (app.HasGranitMigrateFlag())
 // UseGranitExceptionHandling maps unhandled exceptions to RFC 7807 Problem
 // Details responses. 5xx details masked in non-Development (ISO 27001).
 app.UseGranitExceptionHandling();
+app.UseGranitSecurityHeaders();
 
 // ── Step 5 · Health endpoints ─────────────────────────────────────────────────
 // MapGranitHealthChecks → /health/live (always 200), /health/ready (readiness

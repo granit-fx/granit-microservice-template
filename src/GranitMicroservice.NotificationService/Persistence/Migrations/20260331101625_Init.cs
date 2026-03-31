@@ -12,7 +12,7 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "notification_delivery_attempts",
+                name: "notifications_delivery_attempts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -29,11 +29,11 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notification_delivery_attempts", x => x.Id);
+                    table.PrimaryKey("PK_notifications_delivery_attempts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "notification_mobile_push_tokens",
+                name: "notifications_mobile_push_tokens",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -46,11 +46,11 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notification_mobile_push_tokens", x => x.Id);
+                    table.PrimaryKey("PK_notifications_mobile_push_tokens", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "notification_preferences",
+                name: "notifications_preferences",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -66,11 +66,11 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notification_preferences", x => x.Id);
+                    table.PrimaryKey("PK_notifications_preferences", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "notification_subscriptions",
+                name: "notifications_subscriptions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -84,11 +84,11 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notification_subscriptions", x => x.Id);
+                    table.PrimaryKey("PK_notifications_subscriptions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "notification_user_notifications",
+                name: "notifications_user_notifications",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -106,56 +106,56 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notification_user_notifications", x => x.Id);
+                    table.PrimaryKey("PK_notifications_user_notifications", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_notification_delivery_attempts_audit",
-                table: "notification_delivery_attempts",
+                name: "ix_notifications_delivery_attempts_audit",
+                table: "notifications_delivery_attempts",
                 columns: new[] { "TenantId", "OccurredAt" },
                 descending: new[] { false, true });
 
             migrationBuilder.CreateIndex(
-                name: "ix_notification_delivery_attempts_notification",
-                table: "notification_delivery_attempts",
+                name: "ix_notifications_delivery_attempts_notification",
+                table: "notifications_delivery_attempts",
                 columns: new[] { "NotificationId", "ChannelName" });
 
             migrationBuilder.CreateIndex(
-                name: "ix_notification_mobile_push_tokens_user_tenant",
-                table: "notification_mobile_push_tokens",
+                name: "ix_notifications_mobile_push_tokens_user_tenant",
+                table: "notifications_mobile_push_tokens",
                 columns: new[] { "UserId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "uq_notification_mobile_push_tokens_device_tenant",
-                table: "notification_mobile_push_tokens",
+                name: "uq_notifications_mobile_push_tokens_device_tenant",
+                table: "notifications_mobile_push_tokens",
                 columns: new[] { "DeviceToken", "TenantId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "uq_notification_preferences_user_type_channel_tenant",
-                table: "notification_preferences",
+                name: "uq_notifications_preferences_user_type_channel_tenant",
+                table: "notifications_preferences",
                 columns: new[] { "UserId", "NotificationTypeName", "ChannelName", "TenantId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_notification_subscriptions_entity",
-                table: "notification_subscriptions",
+                name: "ix_notifications_subscriptions_entity",
+                table: "notifications_subscriptions",
                 columns: new[] { "EntityType", "EntityId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "ix_notification_subscriptions_global",
-                table: "notification_subscriptions",
+                name: "ix_notifications_subscriptions_global",
+                table: "notifications_subscriptions",
                 columns: new[] { "UserId", "NotificationTypeName", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "ix_notification_user_notifications_entity_feed",
-                table: "notification_user_notifications",
+                name: "ix_notifications_user_notifications_entity_feed",
+                table: "notifications_user_notifications",
                 columns: new[] { "RelatedEntityType", "RelatedEntityId", "TenantId", "CreatedAt" },
                 descending: new[] { false, false, false, true });
 
             migrationBuilder.CreateIndex(
-                name: "ix_notification_user_notifications_inbox",
-                table: "notification_user_notifications",
+                name: "ix_notifications_user_notifications_inbox",
+                table: "notifications_user_notifications",
                 columns: new[] { "RecipientUserId", "TenantId", "State", "CreatedAt" },
                 descending: new[] { false, false, false, true });
         }
@@ -164,19 +164,19 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "notification_delivery_attempts");
+                name: "notifications_delivery_attempts");
 
             migrationBuilder.DropTable(
-                name: "notification_mobile_push_tokens");
+                name: "notifications_mobile_push_tokens");
 
             migrationBuilder.DropTable(
-                name: "notification_preferences");
+                name: "notifications_preferences");
 
             migrationBuilder.DropTable(
-                name: "notification_subscriptions");
+                name: "notifications_subscriptions");
 
             migrationBuilder.DropTable(
-                name: "notification_user_notifications");
+                name: "notifications_user_notifications");
         }
     }
 }

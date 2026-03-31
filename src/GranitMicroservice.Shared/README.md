@@ -1,7 +1,7 @@
 # GranitMicroservice.Shared — Integration Event Contracts
 
 This project contains **integration event contracts** shared across microservices.
-It depends only on `Granit.Core` and must never contain business logic, services,
+It depends only on `Granit` and must never contain business logic, services,
 or infrastructure code.
 
 ## Rules

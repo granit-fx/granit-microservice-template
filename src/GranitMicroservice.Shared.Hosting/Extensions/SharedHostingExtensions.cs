@@ -1,6 +1,6 @@
 using Granit.Bundle.Essentials;
-using Granit.Core.Extensions;
-using Granit.Persistence.Hosting.Extensions;
+using Granit.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
 using GranitMicroservice.ServiceDefaults;
 using Microsoft.AspNetCore.Builder;
 

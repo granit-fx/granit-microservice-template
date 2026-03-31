@@ -1,8 +1,8 @@
-using Granit.Core.DataFiltering;
-using Granit.Core.MultiTenancy;
-using Granit.Identity.EntityFrameworkCore.DbContext;
-using Granit.Identity.EntityFrameworkCore.Entities;
-using Granit.Persistence.Extensions;
+using Granit.DataFiltering;
+using Granit.MultiTenancy;
+using Granit.Identity.Federated.EntityFrameworkCore.DbContext;
+using Granit.Identity.Federated.EntityFrameworkCore.Entities;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GranitMicroservice.IdentityService.Persistence;

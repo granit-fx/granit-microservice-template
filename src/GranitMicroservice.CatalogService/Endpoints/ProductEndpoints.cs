@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.RateLimiting.AspNetCore;
 using GranitMicroservice.CatalogService.Domain;
 using GranitMicroservice.CatalogService.Persistence;

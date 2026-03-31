@@ -24,6 +24,7 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                     Enabled = table.Column<bool>(type: "boolean", nullable: false),
                     LastSyncedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ExtraPropertiesJson = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),

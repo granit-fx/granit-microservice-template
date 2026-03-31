@@ -1,6 +1,6 @@
-using Granit.Core.DataFiltering;
-using Granit.Core.MultiTenancy;
-using Granit.Persistence.Extensions;
+using Granit.DataFiltering;
+using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using GranitMicroservice.CatalogService.Domain;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,9 +1,9 @@
 using Granit.Authentication.JwtBearer;
 using Granit.Caching.StackExchangeRedis;
-using Granit.Core.Modularity;
-using Granit.EventBus.Wolverine;
+using Granit.Modularity;
+using Granit.Events.Wolverine;
 using Granit.Http.Resilience;
-using Granit.Persistence.Hosting;
+using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Wolverine.Postgresql;
 
 namespace GranitMicroservice.Shared.Hosting;
@@ -13,10 +13,10 @@ namespace GranitMicroservice.Shared.Hosting;
 /// Domain-specific modules (Identity, Notifications, Authorization) are forbidden here.
 /// </summary>
 [DependsOn(
-    typeof(GranitCachingRedisModule),
-    typeof(GranitEventBusWolverineModule),
+    typeof(GranitCachingStackExchangeRedisModule),
+    typeof(GranitEventsWolverineModule),
     typeof(GranitHttpResilienceModule),
-    typeof(GranitJwtBearerModule),
-    typeof(GranitPersistenceHostingModule),
+    typeof(GranitAuthenticationJwtBearerModule),
+    typeof(GranitPersistenceEntityFrameworkCoreHostingModule),
     typeof(GranitWolverinePostgresqlModule))]
 public sealed class SharedHostingModule : GranitModule;

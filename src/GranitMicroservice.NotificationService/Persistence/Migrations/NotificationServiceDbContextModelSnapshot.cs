@@ -68,13 +68,13 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NotificationId", "ChannelName")
-                        .HasDatabaseName("ix_notification_delivery_attempts_notification");
+                        .HasDatabaseName("ix_notifications_delivery_attempts_notification");
 
                     b.HasIndex("TenantId", "OccurredAt")
                         .IsDescending(false, true)
-                        .HasDatabaseName("ix_notification_delivery_attempts_audit");
+                        .HasDatabaseName("ix_notifications_delivery_attempts_audit");
 
-                    b.ToTable("notification_delivery_attempts", (string)null);
+                    b.ToTable("notifications_delivery_attempts", (string)null);
                 });
 
             modelBuilder.Entity("Granit.Notifications.Domain.NotificationPreference", b =>
@@ -123,9 +123,9 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
 
                     b.HasIndex("UserId", "NotificationTypeName", "ChannelName", "TenantId")
                         .IsUnique()
-                        .HasDatabaseName("uq_notification_preferences_user_type_channel_tenant");
+                        .HasDatabaseName("uq_notifications_preferences_user_type_channel_tenant");
 
-                    b.ToTable("notification_preferences", (string)null);
+                    b.ToTable("notifications_preferences", (string)null);
                 });
 
             modelBuilder.Entity("Granit.Notifications.Domain.NotificationSubscription", b =>
@@ -166,12 +166,12 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EntityType", "EntityId", "TenantId")
-                        .HasDatabaseName("ix_notification_subscriptions_entity");
+                        .HasDatabaseName("ix_notifications_subscriptions_entity");
 
                     b.HasIndex("UserId", "NotificationTypeName", "TenantId")
-                        .HasDatabaseName("ix_notification_subscriptions_global");
+                        .HasDatabaseName("ix_notifications_subscriptions_global");
 
-                    b.ToTable("notification_subscriptions", (string)null);
+                    b.ToTable("notifications_subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Granit.Notifications.Domain.UserNotification", b =>
@@ -224,13 +224,13 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
 
                     b.HasIndex("RecipientUserId", "TenantId", "State", "CreatedAt")
                         .IsDescending(false, false, false, true)
-                        .HasDatabaseName("ix_notification_user_notifications_inbox");
+                        .HasDatabaseName("ix_notifications_user_notifications_inbox");
 
                     b.HasIndex("RelatedEntityType", "RelatedEntityId", "TenantId", "CreatedAt")
                         .IsDescending(false, false, false, true)
-                        .HasDatabaseName("ix_notification_user_notifications_entity_feed");
+                        .HasDatabaseName("ix_notifications_user_notifications_entity_feed");
 
-                    b.ToTable("notification_user_notifications", (string)null);
+                    b.ToTable("notifications_user_notifications", (string)null);
                 });
 
             modelBuilder.Entity("Granit.Notifications.EntityFrameworkCore.Entities.MobilePushTokenEntity", b =>
@@ -269,12 +269,12 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
 
                     b.HasIndex("DeviceToken", "TenantId")
                         .IsUnique()
-                        .HasDatabaseName("uq_notification_mobile_push_tokens_device_tenant");
+                        .HasDatabaseName("uq_notifications_mobile_push_tokens_device_tenant");
 
                     b.HasIndex("UserId", "TenantId")
-                        .HasDatabaseName("ix_notification_mobile_push_tokens_user_tenant");
+                        .HasDatabaseName("ix_notifications_mobile_push_tokens_user_tenant");
 
-                    b.ToTable("notification_mobile_push_tokens", (string)null);
+                    b.ToTable("notifications_mobile_push_tokens", (string)null);
                 });
 #pragma warning restore 612, 618
         }
