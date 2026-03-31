@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GranitMicroservice.IdentityService.Persistence.Migrations
 {
     [DbContext(typeof(IdentityServiceDbContext))]
-    [Migration("20260326105605_Init")]
+    [Migration("20260331101632_Init")]
     partial class Init
     {
         /// <inheritdoc />

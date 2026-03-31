@@ -1,7 +1,8 @@
 using Granit.Bff.Endpoints.Extensions;
-using Granit.Bff.Options;
 using Granit.Bff.Yarp.Extensions;
+using Granit.Extensions;
 using Granit.Http.Cors.Extensions;
+using GranitMicroservice.ApiGateway;
 using GranitMicroservice.ServiceDefaults;
 using Scalar.AspNetCore;
 
@@ -9,17 +10,28 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // ── Step 1 · Service defaults (Aspire) ────────────────────────────────────────
 // AddServiceDefaults registers the OpenTelemetry pipeline, health checks, and
-// Aspire service discovery. The gateway does NOT use AddSharedHostingAsync
-// because it carries no business logic and needs no Wolverine/Redis/outbox.
+// Aspire service discovery.
 builder.AddServiceDefaults();
 
-// ── Step 1b · CORS ────────────────────────────────────────────────────────────
+// ── Step 1b · Granit module system ────────────────────────────────────────────
+// ApiGatewayModule loads the BFF stack (GranitBffModule → IBffTokenStore,
+// GranitBffYarpModule → YARP transforms, GranitCachingStackExchangeRedisModule
+// → IDistributedCache backed by Redis for server-side token storage).
+await builder.AddGranitAsync<ApiGatewayModule>();
+
+// ── Step 2 · Authentication ───────────────────────────────────────────────────
+// Required by Granit.Http.ApiDocumentation transformers (loaded transitively)
+// and by the BFF cookie-based session validation.
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
+// ── Step 2b · CORS ────────────────────────────────────────────────────────────
 // AddGranitCors reads Cors:AllowedOrigins from configuration and registers
 // a default policy. In BFF mode, CORS is less critical (same-origin cookies),
 // but still needed for health probes and service-to-service preflight.
 builder.AddGranitCors();
 
-// ── Step 2 · BFF reverse proxy ──────────────────────────────────────────────
+// ── Step 3 · BFF reverse proxy ──────────────────────────────────────────────
 // Replaces the previous JWT Bearer + inline YARP setup with a BFF pattern.
 // The gateway handles OIDC authorization code flow with Keycloak, stores tokens
 // server-side in Redis (via IDistributedCache), and injects Bearer tokens into
@@ -35,12 +47,6 @@ builder.AddGranitCors();
 // Each route with Granit.Bff.RequireAuth=true gets automatic token injection.
 builder.AddGranitBffYarp();
 
-// ── Step 3 · BFF configuration ──────────────────────────────────────────────
-// Configure the BFF frontend (OIDC client talking to Keycloak).
-// Authority, ClientId, ClientSecret, Scopes are bound from Bff section.
-builder.Services.Configure<GranitBffOptions>(
-    builder.Configuration.GetSection(GranitBffOptions.SectionName));
-
 // ── Step 4 · OpenAPI aggregation clients ─────────────────────────────────────
 // Named HttpClients proxy each service's OpenAPI spec for a unified Scalar UI.
 builder.Services.AddOpenApi();
@@ -48,6 +54,7 @@ builder.Services.AddHttpClient("catalog", c => c.BaseAddress = new Uri("https+ht
 builder.Services.AddHttpClient("identity", c => c.BaseAddress = new Uri("https+http://identity-service"));
 
 WebApplication app = builder.Build();
+await app.UseGranitAsync();
 
 // ── Step 5 · Middleware pipeline ──────────────────────────────────────────────
 // Order matters:

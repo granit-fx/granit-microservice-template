@@ -27,28 +27,56 @@ var keycloak = builder.AddKeycloak("keycloak", port: 8080)
     .WithEnvironment("KC_HOSTNAME_STRICT_HTTPS", "false")
     .WithEnvironment("KC_PROXY", "edge");
 
-// Services — WaitFor ensures infrastructure is ready before services start
+// Migrations — run --migrate and exit before services start
+var identityMigration = builder.AddProject<Projects.GranitMicroservice_IdentityService>("identity-migration")
+    .WithReference(identityDb)
+    .WithReference(redis)
+    .WithReference(rabbitmq)
+    .WaitFor(identityDb)
+    .WaitFor(rabbitmq)
+    .WithArgs("--migrate");
+
+var catalogMigration = builder.AddProject<Projects.GranitMicroservice_CatalogService>("catalog-migration")
+    .WithReference(catalogDb)
+    .WithReference(redis)
+    .WithReference(rabbitmq)
+    .WaitFor(catalogDb)
+    .WaitFor(rabbitmq)
+    .WithArgs("--migrate");
+
+var notificationMigration = builder.AddProject<Projects.GranitMicroservice_NotificationService>("notification-migration")
+    .WithReference(notificationDb)
+    .WithReference(redis)
+    .WithReference(rabbitmq)
+    .WaitFor(notificationDb)
+    .WaitFor(rabbitmq)
+    .WithArgs("--migrate");
+
+// Services — WaitFor ensures infrastructure + migrations are ready before services start
 var identityService = builder.AddProject<Projects.GranitMicroservice_IdentityService>("identity-service")
     .WithReference(identityDb)
     .WithReference(redis)
     .WithReference(rabbitmq)
     .WaitFor(identityDb)
     .WaitFor(rabbitmq)
-    .WaitFor(keycloak);
+    .WaitFor(keycloak)
+    .WaitFor(identityMigration);
 
 var catalogService = builder.AddProject<Projects.GranitMicroservice_CatalogService>("catalog-service")
     .WithReference(catalogDb)
     .WithReference(redis)
     .WithReference(rabbitmq)
     .WaitFor(catalogDb)
-    .WaitFor(rabbitmq);
+    .WaitFor(rabbitmq)
+    .WaitFor(catalogMigration);
 
 var notificationService = builder.AddProject<Projects.GranitMicroservice_NotificationService>("notification-service")
     .WithReference(notificationDb)
     .WithReference(redis)
     .WithReference(rabbitmq)
     .WaitFor(notificationDb)
-    .WaitFor(rabbitmq);
+    .WaitFor(rabbitmq)
+    .WaitFor(notificationMigration);
 
 builder.AddProject<Projects.GranitMicroservice_ApiGateway>("api-gateway")
     .WithReference(identityService)
