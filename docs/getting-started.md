@@ -4,20 +4,20 @@
 
 1. **.NET 10 SDK** — [download](https://dotnet.microsoft.com/download/dotnet/10.0)
 2. **Docker Desktop** — required for Aspire containers
-3. **GitHub Packages access** — configure NuGet credentials for `granit-fx`
+3. **GitLab Package Registry access** — credentials for the Granit.* NuGet feed
+   on `gitlab.digitaldynamics.be`
 
 ### Configure NuGet credentials
 
+The `nuget.config` already declares the `GranitGitLab` package source. Provide
+credentials via the environment variable below (matches the source key,
+avoids writing the token to disk):
+
 ```bash
-dotnet nuget add source \
-  https://nuget.pkg.github.com/granit-fx/index.json \
-  --name granit-registry \
-  --username YOUR_GITHUB_USERNAME \
-  --password YOUR_GITHUB_PAT \
-  --store-password-in-clear-text
+export NuGetPackageSourceCredentials_GranitGitLab="Username=$GITLAB_USER;Password=$GITLAB_DEPLOY_TOKEN"
 ```
 
-Your PAT needs `read:packages` scope.
+The deploy token needs the `read_package_registry` scope.
 
 ## Scaffold a new solution
 

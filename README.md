@@ -21,7 +21,8 @@ Full documentation at [granit-fx.dev](https://granit-fx.dev).
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Docker](https://www.docker.com/products/docker-desktop/) (for Aspire containers)
-- Access to [Granit GitHub Packages](https://github.com/orgs/granit-fx/packages)
+- Access to the Granit GitLab Package Registry (`gitlab.digitaldynamics.be`)
+  — see [docs/getting-started.md](docs/getting-started.md) for credential setup
 
 ## Quick start
 
