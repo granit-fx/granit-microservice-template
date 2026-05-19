@@ -1,5 +1,9 @@
 # CLAUDE.md - Granit Microservice Template
 
+> Global conventions (git workflow, security, personas, DoD, refactoring, third-party
+> licenses, markdown) live in `~/.claude/CLAUDE.md`. Code quality and anti-patterns
+> follow `granit-dotnet/CLAUDE.md`. Neither is repeated here.
+
 ## Project
 
 - **Type**: .NET Aspire solution template for Granit microservices
@@ -37,13 +41,8 @@ infra/keycloak-realms/                 # Keycloak realm JSON for Aspire import
 ## Commands
 
 ```bash
-# Build entire solution
 dotnet build GranitMicroservice.slnx
-
-# Run tests
 dotnet test GranitMicroservice.slnx
-
-# Start all services via Aspire
 dotnet run --project src/GranitMicroservice.AppHost
 
 # Scaffold from template
@@ -86,21 +85,3 @@ Each microservice owns its PostgreSQL database. No shared databases.
 ### No Docker Compose
 
 Aspire orchestrates everything. No `docker-compose.yml`.
-
-## Code quality
-
-Follows `granit-dotnet` conventions (see its CLAUDE.md):
-
-- C# 14: primary constructors, collection expressions, `field` keyword, extension members
-- `[LoggerMessage]` for logging, `TimeProvider` for time, `[GeneratedRegex]` for regex
-- `TypedResults` for API responses, `*Request`/`*Response` DTOs (never `*Dto`)
-- File-scoped namespaces, `var` when type is apparent
-
-## Anti-patterns
-
-- No `DateTime.Now`/`UtcNow` — inject `TimeProvider`
-- No `new Regex(...)` — use `[GeneratedRegex]`
-- No Swashbuckle/NSwag — use `Microsoft.AspNetCore.OpenApi` + Scalar
-- No `docker-compose` — Aspire only
-- No shared DbContext across services
-- No business packages in Shared.Hosting

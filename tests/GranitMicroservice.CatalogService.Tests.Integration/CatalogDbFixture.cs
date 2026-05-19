@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using GranitMicroservice.CatalogService.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
@@ -15,7 +16,7 @@ public sealed class CatalogDbFixture : IAsyncLifetime
             .UseNpgsql(_container.GetConnectionString())
             .Options;
 
-        return new CatalogDbContext(options);
+        return new CatalogDbContext(options, GranitDesignTime.CurrentTenant, GranitDesignTime.DataFilter);
     }
 
     public async ValueTask InitializeAsync()

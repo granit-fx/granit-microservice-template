@@ -4,7 +4,9 @@
 # Pipeline: build+test → security → sbom
 #
 # Required secrets:
-#   GRANIT_PACKAGES_TOKEN — GitHub Packages token for the Granit.* NuGet feed
+#   GITLAB_NUGET_USER  — GitLab username (deploy token user) for the
+#                        Granit.* NuGet feed on gitlab.digitaldynamics.be
+#   GITLAB_NUGET_TOKEN — GitLab deploy token (read_package_registry scope)
 # =============================================================================
 
 name: CI
@@ -35,7 +37,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
+    # Credentials for the GitLab Package Registry passed via
+    # NuGetPackageSourceCredentials_<sourceName> rather than written to
+    # nuget.config on disk. The suffix MUST match the source key in
+    # nuget.config (`GranitGitLab`).
+    env:
+      NuGetPackageSourceCredentials_GranitGitLab: Username=${{ secrets.GITLAB_NUGET_USER }};Password=${{ secrets.GITLAB_NUGET_TOKEN }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -43,16 +50,6 @@ jobs:
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
         with:
           global-json-file: global.json
-
-      - name: Authenticate to GitHub Packages
-        env:
-          GRANIT_PACKAGES_TOKEN: ${{ secrets.GRANIT_PACKAGES_TOKEN }}
-        run: |
-          dotnet nuget update source granit-registry \
-            --username granit-fx \
-            --password "$GRANIT_PACKAGES_TOKEN" \
-            --store-password-in-clear-text \
-            --configfile nuget.config
 
       - name: Restore
         run: dotnet restore GranitMicroservice.slnx
@@ -99,7 +96,8 @@ jobs:
     continue-on-error: true
     permissions:
       contents: read
-      packages: read
+    env:
+      NuGetPackageSourceCredentials_GranitGitLab: Username=${{ secrets.GITLAB_NUGET_USER }};Password=${{ secrets.GITLAB_NUGET_TOKEN }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -107,16 +105,6 @@ jobs:
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
         with:
           global-json-file: global.json
-
-      - name: Authenticate to GitHub Packages
-        env:
-          GRANIT_PACKAGES_TOKEN: ${{ secrets.GRANIT_PACKAGES_TOKEN }}
-        run: |
-          dotnet nuget update source granit-registry \
-            --username granit-fx \
-            --password "$GRANIT_PACKAGES_TOKEN" \
-            --store-password-in-clear-text \
-            --configfile nuget.config
 
       - name: Check vulnerable packages
         run: |
@@ -141,7 +129,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
-      packages: read
+    env:
+      NuGetPackageSourceCredentials_GranitGitLab: Username=${{ secrets.GITLAB_NUGET_USER }};Password=${{ secrets.GITLAB_NUGET_TOKEN }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -149,16 +138,6 @@ jobs:
         uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
         with:
           global-json-file: global.json
-
-      - name: Authenticate to GitHub Packages
-        env:
-          GRANIT_PACKAGES_TOKEN: ${{ secrets.GRANIT_PACKAGES_TOKEN }}
-        run: |
-          dotnet nuget update source granit-registry \
-            --username granit-fx \
-            --password "$GRANIT_PACKAGES_TOKEN" \
-            --store-password-in-clear-text \
-            --configfile nuget.config
 
       - name: Install CycloneDX
         run: dotnet tool install --global CycloneDX

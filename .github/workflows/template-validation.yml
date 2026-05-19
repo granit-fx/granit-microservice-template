@@ -17,8 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
       issues: write  # required for "Create issue on failure" step
+    # GitLab Package Registry credentials for the Granit.* NuGet feed.
+    # Source key in the scaffolded nuget.config is `GranitGitLab`.
+    env:
+      NuGetPackageSourceCredentials_GranitGitLab: Username=${{ secrets.GITLAB_NUGET_USER }};Password=${{ secrets.GITLAB_NUGET_TOKEN }}
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -33,16 +36,6 @@ jobs:
 
       - name: Scaffold solution
         run: dotnet new granit-microservice -n TestScaffold -o /tmp/test-scaffold
-
-      - name: Authenticate to GitHub Packages
-        env:
-          GRANIT_PACKAGES_TOKEN: ${{ secrets.GRANIT_PACKAGES_TOKEN }}
-        run: |
-          dotnet nuget update source granit-registry \
-            --username granit-fx \
-            --password "$GRANIT_PACKAGES_TOKEN" \
-            --store-password-in-clear-text \
-            --configfile /tmp/test-scaffold/nuget.config
 
       - name: Build scaffolded solution
         run: dotnet build /tmp/test-scaffold/TestScaffold.slnx

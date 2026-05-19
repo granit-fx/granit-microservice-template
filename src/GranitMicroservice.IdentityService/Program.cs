@@ -84,13 +84,13 @@ app.UseGranitSecurityHeaders();
 // MapGranitHealthChecks → /health/live (always 200), /health/ready (readiness
 //   tag), /health/startup (startup tag) with structured JSON and stampede cache.
 // MapOpenApi            → /openapi/v1.json
-// MapIdentityUserCacheEndpoints → REST endpoints for the local user cache
+// MapGranitIdentityUserCache → REST endpoints for the local user cache
 //   (GET /users, GET /users/{id}, …)
 //   Granit modules register services but do NOT auto-map routes — always explicit.
 // MapScalarApiReference → interactive API explorer at /scalar
 app.MapGranitHealthChecks();
 app.MapOpenApi();
-app.MapIdentityUserCacheEndpoints();
+app.MapGranitIdentityUserCache();
 app.MapScalarApiReference();
 
 await app.RunAsync();
