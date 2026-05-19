@@ -1,24 +1,23 @@
 using Granit.DataFiltering;
-using Granit.MultiTenancy;
+using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.EntityFrameworkCore.DbContext;
-using Granit.Identity.Federated.EntityFrameworkCore.Entities;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GranitMicroservice.IdentityService.Persistence;
 
 public sealed class IdentityServiceDbContext(
     DbContextOptions<IdentityServiceDbContext> options,
-    ICurrentTenant? currentTenant = null,
-    IDataFilter? dataFilter = null) : DbContext(options), IUserCacheDbContext
+    ICurrentTenant currentTenant,
+    IDataFilter? dataFilter = null)
+    : GranitDbContext(options, currentTenant, dataFilter), IUserCacheDbContext
 {
-    public DbSet<UserCacheEntry> UserCacheEntries => Set<UserCacheEntry>();
+    public DbSet<FederatedIdentity> FederatedIdentities => Set<FederatedIdentity>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityServiceDbContext).Assembly);
         modelBuilder.ConfigureIdentityModule();
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

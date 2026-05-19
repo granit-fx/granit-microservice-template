@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,6 @@ internal sealed class NotificationServiceDbContextFactory : IDesignTimeDbContext
 
         DbContextOptionsBuilder<NotificationServiceDbContext> builder = new();
         builder.UseNpgsql(connectionString);
-        return new NotificationServiceDbContext(builder.Options);
+        return new NotificationServiceDbContext(builder.Options, GranitDesignTime.CurrentTenant, GranitDesignTime.DataFilter);
     }
 }

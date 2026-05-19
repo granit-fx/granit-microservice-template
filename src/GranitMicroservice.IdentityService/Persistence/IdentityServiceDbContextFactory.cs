@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,6 @@ internal sealed class IdentityServiceDbContextFactory : IDesignTimeDbContextFact
 
         DbContextOptionsBuilder<IdentityServiceDbContext> builder = new();
         builder.UseNpgsql(connectionString);
-        return new IdentityServiceDbContext(builder.Options);
+        return new IdentityServiceDbContext(builder.Options, GranitDesignTime.CurrentTenant, GranitDesignTime.DataFilter);
     }
 }

@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,6 @@ internal sealed class CatalogDbContextFactory : IDesignTimeDbContextFactory<Cata
 
         DbContextOptionsBuilder<CatalogDbContext> builder = new();
         builder.UseNpgsql(connectionString);
-        return new CatalogDbContext(builder.Options);
+        return new CatalogDbContext(builder.Options, GranitDesignTime.CurrentTenant, GranitDesignTime.DataFilter);
     }
 }

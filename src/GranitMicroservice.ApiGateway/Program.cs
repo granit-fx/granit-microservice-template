@@ -66,7 +66,7 @@ app.MapDefaultEndpoints();
 
 app.UseCors();
 app.UseGranitBffYarp();
-app.MapGranitBffEndpoints();
+app.MapGranitBff();
 
 // ── Step 6 · OpenAPI spec passthrough ─────────────────────────────────────────
 app.MapGet("/openapi/catalog.json", async (IHttpClientFactory factory) =>
