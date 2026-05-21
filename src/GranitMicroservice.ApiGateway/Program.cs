@@ -108,10 +108,10 @@ app.MapScalarApiReference(options =>
     options.AddDocument("Catalog", "/openapi/catalog.json");
     options.AddDocument("Identity", "/openapi/identity.json");
 
-    string authorizationUrl = builder.Configuration["ApiDocumentation:OAuth2:AuthorizationUrl"]!;
-    string tokenUrl = builder.Configuration["ApiDocumentation:OAuth2:TokenUrl"]!;
-    string clientId = builder.Configuration["ApiDocumentation:OAuth2:ClientId"]!;
-    string[] scopes = builder.Configuration.GetSection("ApiDocumentation:OAuth2:Scopes").Get<string[]>()
+    string authorizationUrl = builder.Configuration["Http:ApiDocumentation:OAuth2:AuthorizationUrl"]!;
+    string tokenUrl = builder.Configuration["Http:ApiDocumentation:OAuth2:TokenUrl"]!;
+    string clientId = builder.Configuration["Http:ApiDocumentation:OAuth2:ClientId"]!;
+    string[] scopes = builder.Configuration.GetSection("Http:ApiDocumentation:OAuth2:Scopes").Get<string[]>()
         ?? ["openid"];
 
     options.AddAuthorizationCodeFlow("OAuth2", flow => flow
