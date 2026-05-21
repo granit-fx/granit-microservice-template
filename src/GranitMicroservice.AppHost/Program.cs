@@ -27,6 +27,15 @@ var keycloak = builder.AddKeycloak("keycloak", port: 8080)
     .WithEnvironment("KC_HOSTNAME_STRICT_HTTPS", "false")
     .WithEnvironment("KC_PROXY", "edge");
 
+// Local SMTP sink — captures emails sent by NotificationService and exposes a
+// web UI on http://localhost:8025. Add Granit.Notifications.Email[.Smtp] +
+// AddGranitNotificationsEmail()/EmailSmtp() in NotificationServiceModule to
+// route notifications here.
+var mailpit = builder.AddContainer("mailpit", "axllent/mailpit")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithHttpEndpoint(port: 8025, targetPort: 8025, name: "ui")
+    .WithEndpoint(port: 1025, targetPort: 1025, name: "smtp", scheme: "tcp");
+
 // Migrations — run --migrate and exit before services start
 var identityMigration = builder.AddProject<Projects.GranitMicroservice_IdentityService>("identity-migration")
     .WithReference(identityDb)
@@ -76,6 +85,7 @@ var notificationService = builder.AddProject<Projects.GranitMicroservice_Notific
     .WithReference(rabbitmq)
     .WaitFor(notificationDb)
     .WaitFor(rabbitmq)
+    .WaitFor(mailpit)
     .WaitForCompletion(notificationMigration);
 
 builder.AddProject<Projects.GranitMicroservice_ApiGateway>("api-gateway")

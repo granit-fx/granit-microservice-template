@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="Granit.Notifications" />
+    <PackageReference Include="Granit.Notifications.Email" />
+    <PackageReference Include="Granit.Notifications.Email.Smtp" />
     <PackageReference Include="Granit.Notifications.EntityFrameworkCore" />
     <PackageReference Include="Granit.Persistence.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
