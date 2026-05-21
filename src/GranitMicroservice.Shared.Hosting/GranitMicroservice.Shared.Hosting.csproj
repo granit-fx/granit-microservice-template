@@ -11,6 +11,8 @@
     <PackageReference Include="Granit.Events.Wolverine" />
     <PackageReference Include="Granit.Authentication.JwtBearer" />
     <PackageReference Include="Granit.Caching.StackExchangeRedis" />
+    <PackageReference Include="Granit.Caching.Vault" />
+    <PackageReference Include="Granit.Vault.HashiCorp" />
     <PackageReference Include="Granit.Http.Resilience" />
   </ItemGroup>
 

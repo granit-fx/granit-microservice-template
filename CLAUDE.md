@@ -66,7 +66,8 @@ Cross-cutting concerns ONLY. Allowed packages:
 - `Granit`, `Granit.Bundle.Essentials`
 - `Granit.Wolverine.Postgresql`, `Granit.EventBus.Wolverine`
 - `Granit.Authentication.JwtBearer`
-- `Granit.Caching.StackExchangeRedis`
+- `Granit.Caching.StackExchangeRedis`, `Granit.Caching.Vault`
+- `Granit.Vault.HashiCorp` (Vault provider — auto-disabled in Development)
 - `Granit.Http.Resilience`
 
 FORBIDDEN in Shared.Hosting: `Granit.Identity`, `Granit.Notifications`,

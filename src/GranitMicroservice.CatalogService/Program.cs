@@ -1,6 +1,7 @@
 using Granit.Caching.StackExchangeRedis.Extensions;
 using Granit.Extensions;
 using Granit.Diagnostics.Extensions;
+using Granit.Http.ApiDocumentation.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -11,7 +12,6 @@ using GranitMicroservice.CatalogService.Endpoints;
 using GranitMicroservice.CatalogService.Persistence;
 using GranitMicroservice.ServiceDefaults;
 using GranitMicroservice.Shared.Hosting.Extensions;
-using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -56,12 +56,6 @@ await builder.AddGranitAsync(granit => granit
 builder.Services.AddGranitDbContext<CatalogDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("catalog-db")));
 
-// ── Step 4 · OpenAPI ──────────────────────────────────────────────────────────
-// Microsoft.AspNetCore.OpenApi generates the spec at /openapi/v1.json.
-// The ApiGateway proxies this endpoint and surfaces it in a unified Scalar UI.
-// Swashbuckle/NSwag are NOT used — ASP.NET Core's built-in generator is sufficient.
-builder.Services.AddOpenApi();
-
 WebApplication app = builder.Build();
 
 // ── Step 5 · Granit middleware pipeline ───────────────────────────────────────
@@ -87,20 +81,16 @@ if (app.HasGranitMigrateFlag())
 app.UseGranitExceptionHandling();
 app.UseGranitSecurityHeaders();
 
-// ── Step 6 · Endpoint mapping ─────────────────────────────────────────────────
-// MapGranitHealthChecks → /health/live (always 200), /health/ready (readiness
-//   tag), /health/startup (startup tag). Uses GranitHealthCheckWriter for
-//   structured JSON output (Grafana/Loki compatible) and stampede-protected
-//   caching (SemaphoreSlim double-check, 10s TTL).
-// MapOpenApi            → /openapi/v1.json
-// MapScalarApiReference → interactive API explorer at /scalar
-// MapProductEndpoints   → domain HTTP endpoints (see Endpoints/ProductEndpoints.cs)
-//
-// Note: Granit module OnApplicationInitialization() only handles infrastructure
-// bootstrapping. Route mapping is always explicit here to keep routing visible.
+// ── Step 5 · Endpoint mapping ─────────────────────────────────────────────────
+// MapGranitHealthChecks      → /health/live, /health/ready, /health/startup
+// UseGranitApiDocumentation  → /openapi/v{N}.json + /scalar interactive UI.
+//   When ApiDocumentation:OAuth2 is configured (see appsettings.json), the
+//   Bearer security scheme is replaced by an OAuth2 Authorization Code + PKCE
+//   flow against Keycloak, so the "Authorize" button in Scalar performs a real
+//   login round-trip instead of asking for a raw bearer token.
+// MapProductEndpoints        → domain HTTP endpoints (see Endpoints/ProductEndpoints.cs)
 app.MapGranitHealthChecks();
-app.MapOpenApi();
-app.MapScalarApiReference();
+app.UseGranitApiDocumentation();
 app.MapProductEndpoints();
 
 await app.RunAsync();

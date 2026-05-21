@@ -60,7 +60,7 @@ var identityService = builder.AddProject<Projects.GranitMicroservice_IdentitySer
     .WaitFor(identityDb)
     .WaitFor(rabbitmq)
     .WaitFor(keycloak)
-    .WaitFor(identityMigration);
+    .WaitForCompletion(identityMigration);
 
 var catalogService = builder.AddProject<Projects.GranitMicroservice_CatalogService>("catalog-service")
     .WithReference(catalogDb)
@@ -68,7 +68,7 @@ var catalogService = builder.AddProject<Projects.GranitMicroservice_CatalogServi
     .WithReference(rabbitmq)
     .WaitFor(catalogDb)
     .WaitFor(rabbitmq)
-    .WaitFor(catalogMigration);
+    .WaitForCompletion(catalogMigration);
 
 var notificationService = builder.AddProject<Projects.GranitMicroservice_NotificationService>("notification-service")
     .WithReference(notificationDb)
@@ -76,7 +76,7 @@ var notificationService = builder.AddProject<Projects.GranitMicroservice_Notific
     .WithReference(rabbitmq)
     .WaitFor(notificationDb)
     .WaitFor(rabbitmq)
-    .WaitFor(notificationMigration);
+    .WaitForCompletion(notificationMigration);
 
 builder.AddProject<Projects.GranitMicroservice_ApiGateway>("api-gateway")
     .WithReference(identityService)

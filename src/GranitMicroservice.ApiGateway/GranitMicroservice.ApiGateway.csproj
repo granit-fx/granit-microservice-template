@@ -7,6 +7,7 @@
     <PackageReference Include="Granit.Bff.Yarp" />
     <PackageReference Include="Granit.Caching.StackExchangeRedis" />
     <PackageReference Include="Granit.Http.Cors" />
+    <PackageReference Include="Granit.Observability" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Scalar.AspNetCore" />
   </ItemGroup>

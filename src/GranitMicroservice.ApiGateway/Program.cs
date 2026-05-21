@@ -1,9 +1,12 @@
+using Granit.Auditing;
 using Granit.Bff.Endpoints.Extensions;
 using Granit.Bff.Yarp.Extensions;
 using Granit.Extensions;
 using Granit.Http.Cors.Extensions;
 using GranitMicroservice.ApiGateway;
+using GranitMicroservice.ApiGateway.Internal;
 using GranitMicroservice.ServiceDefaults;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,6 +21,14 @@ builder.AddServiceDefaults();
 // GranitBffYarpModule → YARP transforms, GranitCachingStackExchangeRedisModule
 // → IDistributedCache backed by Redis for server-side token storage).
 await builder.AddGranitAsync<ApiGatewayModule>();
+
+// GranitBffEndpointsModule pulls in GranitAuditingModule, which registers a
+// background AuditingCleanupWorker that requires IAuditingCleaner. The gateway
+// has no audit persistence — install Granit.Auditing.EntityFrameworkCore and
+// call AddGranitAuditingEntityFrameworkCore to enable retention, and remove
+// this stub. Until then, audit writes from BFF endpoints are silently dropped
+// (they resolve IAuditingWriter optionally) and the cleanup worker no-ops.
+builder.Services.TryAddSingleton<IAuditingCleaner, NullAuditingCleaner>();
 
 // ── Step 2 · Authentication ───────────────────────────────────────────────────
 // Required by Granit.Http.ApiDocumentation transformers (loaded transitively)
@@ -84,12 +95,31 @@ app.MapGet("/openapi/identity.json", async (IHttpClientFactory factory) =>
 }).ExcludeFromDescription();
 
 // ── Step 7 · Unified Scalar UI ────────────────────────────────────────────────
+// The gateway aggregates per-service OpenAPI docs into a single Scalar UI, so it
+// can't use Granit.Http.ApiDocumentation (which is single-document by design).
+// We register the same OAuth2 Authorization Code + PKCE flow manually — the
+// security scheme name "OAuth2" matches what each service's OpenAPI document
+// declares (OAuth2SecuritySchemeTransformer in Granit.Http.ApiDocumentation),
+// so the "Authorize" button drives a real Keycloak login round-trip.
 app.MapOpenApi();
 app.MapScalarApiReference(options =>
 {
     options.Title = "GranitMicroservice API";
     options.AddDocument("Catalog", "/openapi/catalog.json");
     options.AddDocument("Identity", "/openapi/identity.json");
+
+    string authorizationUrl = builder.Configuration["Http:ApiDocumentation:OAuth2:AuthorizationUrl"]!;
+    string tokenUrl = builder.Configuration["Http:ApiDocumentation:OAuth2:TokenUrl"]!;
+    string clientId = builder.Configuration["Http:ApiDocumentation:OAuth2:ClientId"]!;
+    string[] scopes = builder.Configuration.GetSection("Http:ApiDocumentation:OAuth2:Scopes").Get<string[]>()
+        ?? ["openid"];
+
+    options.AddAuthorizationCodeFlow("OAuth2", flow => flow
+        .WithAuthorizationUrl(authorizationUrl)
+        .WithTokenUrl(tokenUrl)
+        .WithClientId(clientId)
+        .WithSelectedScopes(scopes)
+        .WithPkce(Pkce.Sha256));
 });
 
 await app.RunAsync();
