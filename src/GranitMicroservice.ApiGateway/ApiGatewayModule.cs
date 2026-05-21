@@ -3,6 +3,7 @@ using Granit.Bff.Endpoints;
 using Granit.Bff.Yarp;
 using Granit.Caching.StackExchangeRedis;
 using Granit.Modularity;
+using Granit.Observability;
 
 namespace GranitMicroservice.ApiGateway;
 
@@ -10,5 +11,6 @@ namespace GranitMicroservice.ApiGateway;
     typeof(GranitBffModule),
     typeof(GranitBffEndpointsModule),
     typeof(GranitBffYarpModule),
-    typeof(GranitCachingStackExchangeRedisModule))]
+    typeof(GranitCachingStackExchangeRedisModule),
+    typeof(GranitObservabilityModule))]
 public sealed class ApiGatewayModule : GranitModule;

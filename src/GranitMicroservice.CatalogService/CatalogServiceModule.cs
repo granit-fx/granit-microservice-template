@@ -1,3 +1,4 @@
+using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
@@ -11,6 +12,7 @@ using GranitMicroservice.CatalogService.Persistence;
 namespace GranitMicroservice.CatalogService;
 
 [DependsOn(
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule),
     typeof(GranitRateLimitingModule),
     typeof(GranitValidationModule))]

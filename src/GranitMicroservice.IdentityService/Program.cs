@@ -1,9 +1,11 @@
 using Granit.Caching.StackExchangeRedis.Extensions;
 using Granit.Extensions;
 using Granit.Diagnostics.Extensions;
+using Granit.Http.ApiDocumentation.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Endpoints.Extensions;
+using Granit.Identity.EntityFrameworkCore.Extensions;
 using Granit.Identity.Federated.EntityFrameworkCore.Extensions;
 using Granit.Identity.Federated.Keycloak.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -13,7 +15,6 @@ using Microsoft.EntityFrameworkCore;
 using GranitMicroservice.IdentityService.Persistence;
 using GranitMicroservice.ServiceDefaults;
 using GranitMicroservice.Shared.Hosting.Extensions;
-using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -51,13 +52,18 @@ builder.Services.AddGranitDbContext<IdentityServiceDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
 
 // ── Step 4 · Granit Identity EF Core store ───────────────────────────────────
-// AddGranitIdentityEntityFrameworkCore wires the Granit.Identity persistence
-// layer (user cache repository, EF migrations) to IdentityServiceDbContext.
-// Must be called after AddDbContextFactory so the context type is already known.
+// Two registrations, both required:
+//   1. Federated cache (Granit.Identity.Federated.EntityFrameworkCore) — replaces
+//      NullUserLookupService with CachedUserLookupService and wires the federated
+//      identity cache against IdentityServiceDbContext.
+//   2. Canonical user directory (Granit.Identity.EntityFrameworkCore) — registers
+//      the isolated IdentityDbContext + IUserDirectoryWriter required by
+//      CachedUserLookupService to materialise the User aggregate on cache miss.
+//      Migrations for the User table live on IdentityServiceDbContext (see
+//      ConfigureGranitIdentityModule in OnGranitModelCreating).
 builder.Services.AddGranitIdentityEntityFrameworkCore<IdentityServiceDbContext>();
-
-// ── Step 5 · OpenAPI ──────────────────────────────────────────────────────────
-builder.Services.AddOpenApi();
+builder.Services.AddGranitIdentityEntityFrameworkCore(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
 
 WebApplication app = builder.Build();
 
@@ -80,17 +86,17 @@ if (app.HasGranitMigrateFlag())
 app.UseGranitExceptionHandling();
 app.UseGranitSecurityHeaders();
 
-// ── Step 7 · Endpoint mapping ─────────────────────────────────────────────────
-// MapGranitHealthChecks → /health/live (always 200), /health/ready (readiness
-//   tag), /health/startup (startup tag) with structured JSON and stampede cache.
-// MapOpenApi            → /openapi/v1.json
+// ── Step 6 · Endpoint mapping ─────────────────────────────────────────────────
+// MapGranitHealthChecks      → /health/live, /health/ready, /health/startup
 // MapGranitIdentityUserCache → REST endpoints for the local user cache
-//   (GET /users, GET /users/{id}, …)
-//   Granit modules register services but do NOT auto-map routes — always explicit.
-// MapScalarApiReference → interactive API explorer at /scalar
+//   (GET /users, GET /users/{id}, …). Granit modules register services but do
+//   NOT auto-map routes — routing stays explicit here.
+// UseGranitApiDocumentation  → /openapi/v{N}.json + /scalar interactive UI.
+//   With ApiDocumentation:OAuth2 configured (see appsettings.json), Scalar's
+//   "Authorize" button runs an OAuth2 Authorization Code + PKCE flow against
+//   Keycloak instead of asking for a raw bearer token.
 app.MapGranitHealthChecks();
-app.MapOpenApi();
 app.MapGranitIdentityUserCache();
-app.MapScalarApiReference();
+app.UseGranitApiDocumentation();
 
 await app.RunAsync();

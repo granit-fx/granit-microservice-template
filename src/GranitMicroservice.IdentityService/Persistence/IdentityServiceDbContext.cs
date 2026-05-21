@@ -1,4 +1,5 @@
 using Granit.DataFiltering;
+using Granit.Identity.EntityFrameworkCore.Extensions;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.EntityFrameworkCore.DbContext;
 using Granit.MultiTenancy;
@@ -17,7 +18,12 @@ public sealed class IdentityServiceDbContext(
 
     protected override void OnGranitModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityServiceDbContext).Assembly);
+        // Owns the migrations for both the federated identity cache
+        // (FederatedIdentity) and the canonical User aggregate. The runtime
+        // writes to the User table go through IdentityDbContext registered
+        // by AddGranitIdentityEntityFrameworkCore — both contexts map the
+        // same physical table.
         modelBuilder.ConfigureIdentityModule();
+        modelBuilder.ConfigureGranitIdentityModule();
     }
 }

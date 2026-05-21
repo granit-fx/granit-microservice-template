@@ -112,20 +112,12 @@ public static class Extensions
                     .AddHttpClientInstrumentation();
             });
 
-        AddOpenTelemetryExporters(builder);
+        // OTLP export (UseOtlpExporter) is owned by GranitObservabilityModule, loaded via
+        // Granit.Bundle.Essentials in SharedHostingModule and explicitly in ApiGatewayModule.
+        // OpenTelemetry SDK 1.9+ forbids multiple UseOtlpExporter() calls on the same
+        // IServiceCollection — registering it here would crash startup under Aspire.
 
         return builder;
-    }
-
-    private static void AddOpenTelemetryExporters(IHostApplicationBuilder builder)
-    {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(
-            builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-
-        if (useOtlpExporter)
-        {
-            builder.Services.AddOpenTelemetry().UseOtlpExporter();
-        }
     }
 
     private static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
