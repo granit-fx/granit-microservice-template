@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="Granit.Http.ApiDocumentation" />
+    <PackageReference Include="Granit.Http.Cors" />
     <PackageReference Include="Granit.Persistence.EntityFrameworkCore" />
     <PackageReference Include="Granit.RateLimiting" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />

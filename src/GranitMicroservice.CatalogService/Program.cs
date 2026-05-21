@@ -2,6 +2,7 @@ using Granit.Caching.StackExchangeRedis.Extensions;
 using Granit.Extensions;
 using Granit.Diagnostics.Extensions;
 using Granit.Http.ApiDocumentation.Extensions;
+using Granit.Http.Cors.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -56,6 +57,14 @@ await builder.AddGranitAsync(granit => granit
 builder.Services.AddGranitDbContext<CatalogDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("catalog-db")));
 
+// ── Step 4 · CORS ─────────────────────────────────────────────────────────────
+// Strict BFF in production: the SPA only talks to the gateway, never to this
+// backend cross-origin, so Http:Cors:AllowedOrigins is empty in appsettings.json
+// and the default policy denies every cross-origin request. The Development
+// override (appsettings.Development.json) opens the gateway origin so Scalar's
+// "Try it" button can call backend endpoints from the gateway-hosted Scalar UI.
+builder.AddGranitCors();
+
 WebApplication app = builder.Build();
 
 // ── Step 5 · Granit middleware pipeline ───────────────────────────────────────
@@ -79,6 +88,7 @@ if (app.HasGranitMigrateFlag())
 // (e.g., DI, correlation IDs). 5xx details are masked in non-Development
 // environments (ISO 27001 compliance — no internal paths/SQL in responses).
 app.UseGranitExceptionHandling();
+app.UseCors();
 app.UseGranitSecurityHeaders();
 
 // ── Step 5 · Endpoint mapping ─────────────────────────────────────────────────

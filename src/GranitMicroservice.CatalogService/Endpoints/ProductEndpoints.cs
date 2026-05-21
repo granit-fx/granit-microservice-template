@@ -13,7 +13,11 @@ public static class ProductEndpoints
 {
     public static RouteGroupBuilder MapProductEndpoints(this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/products")
+        // /products — domain prefix only. The "api" + "catalog" namespace lives
+        // on the gateway side (YARP route /api/catalog/{**catch-all} → strip /api/catalog
+        // → forwards /products/{...} to this service). Keeping the API surface free of
+        // /api or /catalog avoids the double-prefix mismatch with the gateway routing.
+        var group = routes.MapGroup("/products")
             .WithTags("Products")
             .RequireAuthorization();
 
