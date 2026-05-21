@@ -9,6 +9,7 @@
     <PackageReference Include="Granit.Authentication.JwtBearer.Keycloak" />
     <PackageReference Include="Granit.Authorization" />
     <PackageReference Include="Granit.Http.ApiDocumentation" />
+    <PackageReference Include="Granit.Http.Cors" />
     <PackageReference Include="Granit.Identity" />
     <PackageReference Include="Granit.Identity.EntityFrameworkCore" />
     <PackageReference Include="Granit.Identity.Federated.Keycloak" />

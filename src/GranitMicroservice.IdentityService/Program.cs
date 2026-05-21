@@ -2,6 +2,7 @@ using Granit.Caching.StackExchangeRedis.Extensions;
 using Granit.Extensions;
 using Granit.Diagnostics.Extensions;
 using Granit.Http.ApiDocumentation.Extensions;
+using Granit.Http.Cors.Extensions;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Endpoints.Extensions;
@@ -65,6 +66,14 @@ builder.Services.AddGranitIdentityEntityFrameworkCore<IdentityServiceDbContext>(
 builder.Services.AddGranitIdentityEntityFrameworkCore(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
 
+// ── Step 5 · CORS ─────────────────────────────────────────────────────────────
+// Strict BFF in production: the SPA only talks to the gateway, never to this
+// backend cross-origin, so Http:Cors:AllowedOrigins is empty in appsettings.json
+// and the default policy denies every cross-origin request. The Development
+// override (appsettings.Development.json) opens the gateway origin so Scalar's
+// "Try it" button can call backend endpoints from the gateway-hosted Scalar UI.
+builder.AddGranitCors();
+
 WebApplication app = builder.Build();
 
 // ── Step 6 · Granit middleware pipeline ───────────────────────────────────────
@@ -84,6 +93,7 @@ if (app.HasGranitMigrateFlag())
 // UseGranitExceptionHandling maps unhandled exceptions to RFC 7807 Problem
 // Details responses. 5xx details masked in non-Development (ISO 27001).
 app.UseGranitExceptionHandling();
+app.UseCors();
 app.UseGranitSecurityHeaders();
 
 // ── Step 6 · Endpoint mapping ─────────────────────────────────────────────────
