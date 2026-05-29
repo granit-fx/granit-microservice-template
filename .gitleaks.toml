@@ -1,0 +1,20 @@
+[extend]
+useDefault = true
+
+[allowlist]
+  description = "Allowlist for template dev-only configuration"
+
+  # Each service's appsettings.Development.json ships placeholder secrets
+  # (Cache:Encryption:Key, EmailLookupPepper, local Postgres credentials, …)
+  # meant to be overridden via Vault / environment variables outside of
+  # Development. They are committed on purpose so the scaffolded template runs
+  # out-of-the-box locally — the same convention as granit-showcase-dotnet.
+  paths = [
+    '''appsettings\.Development\.json$''',
+  ]
+
+  # Historical commit that first introduced the dev Cache:Encryption:Key
+  # (pre-allowlist). Needed because CI scans full history (--log-opts="--all").
+  commits = [
+    "be71ccc28b4fe5309ac0e83bf278777a5adcec49",
+  ]
