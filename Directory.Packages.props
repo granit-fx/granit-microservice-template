@@ -8,6 +8,7 @@
   <ItemGroup Label="Granit">
     <PackageVersion Include="Granit" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Bundle.Essentials" Version="0.1.0-dev.*" />
+    <PackageVersion Include="Granit.Auditing.EntityFrameworkCore" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Authentication.JwtBearer" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Bff" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Bff.Endpoints" Version="0.1.0-dev.*" />

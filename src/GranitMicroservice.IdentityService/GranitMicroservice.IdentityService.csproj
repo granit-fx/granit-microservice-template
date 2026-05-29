@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Granit.Auditing.EntityFrameworkCore" />
     <PackageReference Include="Granit.Authentication.JwtBearer.Keycloak" />
     <PackageReference Include="Granit.Authorization" />
     <PackageReference Include="Granit.Http.ApiDocumentation" />

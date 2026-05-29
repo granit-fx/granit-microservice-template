@@ -13,7 +13,7 @@ Last updated: 2026-03-25
 | License      | Package count |
 | ------------ | ------------- |
 | MIT          | 19            |
-| Apache-2.0   | 34            |
+| Apache-2.0   | 35            |
 | BSD-3-Clause | 2             |
 | PostgreSQL   | 1             |
 
@@ -55,6 +55,7 @@ Last updated: 2026-03-25
 | FluentValidation | 12.x | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | FluentValidation.DependencyInjectionExtensions | 12.x | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | Granit | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
+| Granit.Auditing.EntityFrameworkCore | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Authentication.JwtBearer | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Authentication.JwtBearer.Keycloak | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Authorization | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |

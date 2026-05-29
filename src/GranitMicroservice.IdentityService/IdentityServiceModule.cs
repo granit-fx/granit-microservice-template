@@ -1,3 +1,4 @@
+using Granit.Auditing.EntityFrameworkCore;
 using Granit.Authentication.JwtBearer;
 using Granit.Authentication.JwtBearer.Keycloak;
 using Granit.Authorization;
@@ -15,6 +16,7 @@ using GranitMicroservice.IdentityService.Persistence;
 namespace GranitMicroservice.IdentityService;
 
 [DependsOn(
+    typeof(GranitAuditingEntityFrameworkCoreModule),
     typeof(GranitAuthenticationJwtBearerKeycloakModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),

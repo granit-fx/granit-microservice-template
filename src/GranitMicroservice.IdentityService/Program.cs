@@ -1,3 +1,4 @@
+using Granit.Auditing.EntityFrameworkCore.Extensions;
 using Granit.Caching.StackExchangeRedis.Extensions;
 using Granit.Extensions;
 using Granit.Diagnostics.Extensions;
@@ -83,6 +84,24 @@ builder.AddGranitIdentityFederatedEntityFrameworkCore(opts =>
     // opts.ConfigureSchemaPerTenant = db => db.UseNpgsql(baseConnString);
 });
 builder.AddGranitIdentityEntityFrameworkCore(opts =>
+{
+    opts.StorageMode = DualScopeStorageMode.Shared;
+    opts.Configure = db => db.UseNpgsql(builder.Configuration.GetConnectionString("identity-db"));
+
+    // Pour activer l'isolation physique par tenant (RGPD Art. 17, ISO 27001 A.8.12):
+    // opts.StorageMode = DualScopeStorageMode.Segregated;
+    // opts.ConfigureHost = db => db.UseNpgsql(hostConnString);
+    // opts.ConfigureSchemaPerTenant = db => db.UseNpgsql(baseConnString);
+});
+
+// ── Step 4b · Audit trail EF Core store ───────────────────────────────────────
+// IdentityServiceModule pulls GranitAuditingModule transitively (via
+// GranitIdentityModule), which runs an AuditingCleanupWorker and emits an audit
+// trail for identity operations. AddGranitAuditingEntityFrameworkCore swaps the
+// default no-op stores for durable EF Core ones (writer/reader/cleaner). Shared
+// mode keeps the trail in the identity database; migrations for the audit tables
+// are owned by IdentityServiceDbContext via ConfigureAuditingModule.
+builder.AddGranitAuditingEntityFrameworkCore(opts =>
 {
     opts.StorageMode = DualScopeStorageMode.Shared;
     opts.Configure = db => db.UseNpgsql(builder.Configuration.GetConnectionString("identity-db"));
