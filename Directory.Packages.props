@@ -30,6 +30,8 @@
     <PackageVersion Include="Granit.Identity.Federated.EntityFrameworkCore" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Identity.Endpoints" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Notifications" Version="0.1.0-dev.*" />
+    <PackageVersion Include="Granit.Notifications.Email" Version="0.1.0-dev.*" />
+    <PackageVersion Include="Granit.Notifications.Email.Smtp" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Notifications.EntityFrameworkCore" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Observability" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Persistence.EntityFrameworkCore" Version="0.1.0-dev.*" />
