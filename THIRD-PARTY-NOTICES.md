@@ -66,6 +66,7 @@ Last updated: 2026-03-25
 | Granit.EventBus | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.EventBus.Wolverine | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Http.Cors | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
+| Granit.Http.RateLimiting | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Http.Resilience | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Identity | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Identity.Endpoints | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
@@ -76,7 +77,6 @@ Last updated: 2026-03-25
 | Granit.Observability | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Persistence.EntityFrameworkCore | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Persistence.EntityFrameworkCore.Hosting | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
-| Granit.RateLimiting | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Wolverine | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Wolverine.Postgresql | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.15.x | Copyright The OpenTelemetry Authors |

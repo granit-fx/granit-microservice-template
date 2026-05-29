@@ -1,5 +1,5 @@
 using Granit.Events;
-using Granit.RateLimiting.AspNetCore;
+using Granit.Http.RateLimiting.AspNetCore;
 using GranitMicroservice.CatalogService.Domain;
 using GranitMicroservice.CatalogService.Persistence;
 using GranitMicroservice.Shared.Events;
