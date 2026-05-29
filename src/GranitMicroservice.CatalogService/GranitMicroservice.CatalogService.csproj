@@ -3,8 +3,8 @@
   <ItemGroup>
     <PackageReference Include="Granit.Http.ApiDocumentation" />
     <PackageReference Include="Granit.Http.Cors" />
+    <PackageReference Include="Granit.Http.RateLimiting" />
     <PackageReference Include="Granit.Persistence.EntityFrameworkCore" />
-    <PackageReference Include="Granit.RateLimiting" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />

@@ -23,6 +23,7 @@
     <PackageVersion Include="Granit.Events.Wolverine" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Http.ApiDocumentation" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Http.Cors" Version="0.1.0-dev.*" />
+    <PackageVersion Include="Granit.Http.RateLimiting" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Http.Resilience" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Identity" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Identity.EntityFrameworkCore" Version="0.1.0-dev.*" />
@@ -36,7 +37,6 @@
     <PackageVersion Include="Granit.Observability" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Persistence.EntityFrameworkCore" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Persistence.EntityFrameworkCore.Hosting" Version="0.1.0-dev.*" />
-    <PackageVersion Include="Granit.RateLimiting" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Wolverine" Version="0.1.0-dev.*" />
     <PackageVersion Include="Granit.Wolverine.Postgresql" Version="0.1.0-dev.*" />
   </ItemGroup>

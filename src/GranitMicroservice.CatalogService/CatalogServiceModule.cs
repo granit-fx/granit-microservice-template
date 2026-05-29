@@ -4,7 +4,7 @@ using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Hosting;
-using Granit.RateLimiting;
+using Granit.Http.RateLimiting;
 using Granit.Validation;
 using Granit.Validation.Extensions;
 using GranitMicroservice.CatalogService.Persistence;
@@ -14,7 +14,7 @@ namespace GranitMicroservice.CatalogService;
 [DependsOn(
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule),
-    typeof(GranitRateLimitingModule),
+    typeof(GranitHttpRateLimitingModule),
     typeof(GranitValidationModule))]
 public sealed class CatalogServiceModule : GranitModule, IMigratableModule<CatalogDbContext>
 {
