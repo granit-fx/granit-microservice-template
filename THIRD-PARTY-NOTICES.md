@@ -74,6 +74,7 @@ Last updated: 2026-03-25
 | Granit.Identity.Keycloak | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Notifications | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Notifications.EntityFrameworkCore | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
+| Granit.Notifications.MobilePush | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Observability | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Persistence.EntityFrameworkCore | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Persistence.EntityFrameworkCore.Hosting | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |

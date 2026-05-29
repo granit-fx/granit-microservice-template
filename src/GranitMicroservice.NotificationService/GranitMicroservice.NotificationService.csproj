@@ -10,6 +10,7 @@
     <PackageReference Include="Granit.Notifications.Email" />
     <PackageReference Include="Granit.Notifications.Email.Smtp" />
     <PackageReference Include="Granit.Notifications.EntityFrameworkCore" />
+    <PackageReference Include="Granit.Notifications.MobilePush" />
     <PackageReference Include="Granit.Persistence.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
