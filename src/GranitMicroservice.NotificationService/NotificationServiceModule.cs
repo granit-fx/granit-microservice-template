@@ -9,7 +9,6 @@ using Granit.Notifications.Extensions;
 using Granit.Notifications.MobilePush.Extensions;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Hosting;
-using Granit.Persistence.MultiTenancy;
 using GranitMicroservice.NotificationService.Notifications;
 using GranitMicroservice.NotificationService.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -36,20 +35,11 @@ public sealed class NotificationServiceModule : GranitModule, IMigratableModule<
         context.Services.AddGranitNotificationsEmailSmtp();
 
         // Durable EF Core stores for user notifications + preferences (replaces the
-        // default in-memory stores). Shared mode keeps every tenant's rows in one host
-        // table with a row-level filter — the behavioural default. Migrations for the
-        // table are owned by NotificationServiceDbContext via ConfigureNotificationsModule.
+        // default in-memory stores). Tenant rows carry a TenantId filtered by a
+        // row-level query filter. Migrations owned by NotificationServiceDbContext via
+        // ConfigureNotificationsModule.
         context.Builder.AddGranitNotificationsEntityFrameworkCore(opts =>
-        {
-            opts.StorageMode = DualScopeStorageMode.Shared;
-            opts.Configure = db => db.UseNpgsql(
-                context.Builder.Configuration.GetConnectionString("notification-db"));
-
-            // Pour activer l'isolation physique par tenant (RGPD Art. 17, ISO 27001 A.8.12):
-            // opts.StorageMode = DualScopeStorageMode.Segregated;
-            // opts.ConfigureHost = db => db.UseNpgsql(hostConnString);
-            // opts.ConfigureSchemaPerTenant = db => db.UseNpgsql(baseConnString);
-        });
+            opts.UseNpgsql(context.Builder.Configuration.GetConnectionString("notification-db")));
 
         // AddGranitNotificationsEntityFrameworkCore unconditionally registers
         // EfCoreMobilePushTokenStore, which depends on IMobilePushTokenHasher — provided
