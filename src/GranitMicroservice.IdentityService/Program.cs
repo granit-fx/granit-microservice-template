@@ -12,7 +12,6 @@ using Granit.Identity.Federated.EntityFrameworkCore.Extensions;
 using Granit.Identity.Federated.Keycloak.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Extensions;
-using Granit.Persistence.MultiTenancy;
 using GranitMicroservice.IdentityService;
 using Microsoft.EntityFrameworkCore;
 using GranitMicroservice.IdentityService.Persistence;
@@ -54,63 +53,30 @@ await builder.AddGranitAsync(granit => granit
 builder.Services.AddGranitDbContext<IdentityServiceDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
 
-// ── Step 4 · Granit Identity EF Core store ───────────────────────────────────
-// Two registrations, both required:
-//   1. Federated cache (Granit.Identity.Federated.EntityFrameworkCore) — replaces
-//      NullUserLookupService with CachedUserLookupService and wires the federated
-//      identity cache against its own IdentityFederatedHostDbContext. Since the
-//      Granit DualScopeStorageMode V2 API (Epic #2382) this is registered on the
-//      IHostApplicationBuilder via an options object: StorageMode selects the
-//      physical layout, Configure supplies the EF Core provider + connection.
+// ── Step 4 · Granit Identity EF Core stores ──────────────────────────────────
+// Two registrations required:
+//   1. Federated identity cache (Granit.Identity.Federated.EntityFrameworkCore) —
+//      swaps NullUserLookupService for CachedUserLookupService; tenant rows carry a
+//      TenantId filtered by a row-level query filter on the internal DbContext.
 //   2. Canonical user directory (Granit.Identity.EntityFrameworkCore) — registers
-//      the IdentityHostDbContext + IUserDirectoryWriter required by
-//      CachedUserLookupService to materialise the User aggregate on cache miss.
-//      Migrations for both tables live on IdentityServiceDbContext (see
-//      ConfigureIdentityModule + ConfigureGranitIdentityModule in OnGranitModelCreating).
-// Both adopt the Granit DualScopeStorageMode V2 API: registered on the
-// IHostApplicationBuilder via an options object whose StorageMode selects the
-// physical layout and whose Configure supplies the EF Core provider + connection.
+//      IUserDirectoryWriter used by CachedUserLookupService to materialise the User
+//      aggregate on cache miss.
+// Migrations for both tables live on IdentityServiceDbContext (see
+// ConfigureIdentityModule + ConfigureGranitIdentityModule in OnGranitModelCreating).
 builder.AddGranitIdentityFederatedEntityFrameworkCore(opts =>
-{
-    // Shared (default): a single host table holds every federated identity; tenant
-    // rows carry a TenantId filtered by a row-level query filter. Behavioural
-    // equivalent of the pre-V2 registration.
-    opts.StorageMode = DualScopeStorageMode.Shared;
-    opts.Configure = db => db.UseNpgsql(builder.Configuration.GetConnectionString("identity-db"));
-
-    // Pour activer l'isolation physique par tenant (RGPD Art. 17, ISO 27001 A.8.12):
-    // opts.StorageMode = DualScopeStorageMode.Segregated;
-    // opts.ConfigureHost = db => db.UseNpgsql(hostConnString);
-    // opts.ConfigureSchemaPerTenant = db => db.UseNpgsql(baseConnString);
-});
-builder.AddGranitIdentityEntityFrameworkCore(opts =>
-{
-    opts.StorageMode = DualScopeStorageMode.Shared;
-    opts.Configure = db => db.UseNpgsql(builder.Configuration.GetConnectionString("identity-db"));
-
-    // Pour activer l'isolation physique par tenant (RGPD Art. 17, ISO 27001 A.8.12):
-    // opts.StorageMode = DualScopeStorageMode.Segregated;
-    // opts.ConfigureHost = db => db.UseNpgsql(hostConnString);
-    // opts.ConfigureSchemaPerTenant = db => db.UseNpgsql(baseConnString);
-});
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
+builder.Services.AddGranitIdentityEntityFrameworkCore(opts =>
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
 
 // ── Step 4b · Audit trail EF Core store ───────────────────────────────────────
 // IdentityServiceModule pulls GranitAuditingModule transitively (via
 // GranitIdentityModule), which runs an AuditingCleanupWorker and emits an audit
 // trail for identity operations. AddGranitAuditingEntityFrameworkCore swaps the
-// default no-op stores for durable EF Core ones (writer/reader/cleaner). Shared
-// mode keeps the trail in the identity database; migrations for the audit tables
-// are owned by IdentityServiceDbContext via ConfigureAuditingModule.
+// default no-op stores for durable EF Core ones (writer/reader/cleaner). Tenant
+// rows carry a TenantId filtered by a row-level query filter; migrations for the
+// audit tables are owned by IdentityServiceDbContext via ConfigureAuditingModule.
 builder.AddGranitAuditingEntityFrameworkCore(opts =>
-{
-    opts.StorageMode = DualScopeStorageMode.Shared;
-    opts.Configure = db => db.UseNpgsql(builder.Configuration.GetConnectionString("identity-db"));
-
-    // Pour activer l'isolation physique par tenant (RGPD Art. 17, ISO 27001 A.8.12):
-    // opts.StorageMode = DualScopeStorageMode.Segregated;
-    // opts.ConfigureHost = db => db.UseNpgsql(hostConnString);
-    // opts.ConfigureSchemaPerTenant = db => db.UseNpgsql(baseConnString);
-});
+    opts.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
 
 // ── Step 5 · CORS ─────────────────────────────────────────────────────────────
 // Strict BFF in production: the SPA only talks to the gateway, never to this
