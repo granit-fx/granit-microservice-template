@@ -14,7 +14,7 @@
 
 ## Stack and versions
 
-.NET 10 (LTS) | C# 14 | .NET Aspire 9 | EF Core 10 | Wolverine 5.20+ | YARP
+.NET 10 (LTS) | C# 14 | .NET Aspire 13 | EF Core 10 | Wolverine 6 | YARP
 
 ## Architecture
 

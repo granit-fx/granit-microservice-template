@@ -4,7 +4,7 @@ This file lists the third-party libraries used by
 **granit-microservice-template** and their respective licenses. It is updated
 whenever an external dependency is added or changed.
 
-Last updated: 2026-03-25
+Last updated: 2026-06-03
 
 ---
 
@@ -12,7 +12,7 @@ Last updated: 2026-03-25
 
 | License      | Package count |
 | ------------ | ------------- |
-| MIT          | 19            |
+| MIT          | 28            |
 | Apache-2.0   | 35            |
 | BSD-3-Clause | 2             |
 | PostgreSQL   | 1             |
@@ -33,6 +33,15 @@ Last updated: 2026-03-25
 | Aspire.Hosting.Redis | 13.x | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.Authentication.JwtBearer | 10.x | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.OpenApi | 10.x | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.CSharp.Scripting | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.CSharp.Workspaces | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.Scripting | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.Scripting.Common | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.VisualBasic | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.VisualBasic.Workspaces | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.Workspaces.Common | 5.3.0 | (c) Microsoft Corporation |
+| Microsoft.CodeAnalysis.Workspaces.MSBuild | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore | 10.x | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.Design | 10.x | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.Relational | 10.x | (c) Microsoft Corporation |
@@ -41,8 +50,8 @@ Last updated: 2026-03-25
 | Microsoft.Extensions.Http.Resilience | 10.x | (c) Microsoft Corporation |
 | Microsoft.Extensions.ServiceDiscovery | 10.x | (c) Microsoft Corporation |
 | Scalar.AspNetCore | 2.x | Scalar Contributors |
-| WolverineFx | 5.20.x | JasperFx Contributors |
-| WolverineFx.Postgresql | 5.20.x | JasperFx Contributors |
+| WolverineFx | 6.x | JasperFx Contributors |
+| WolverineFx.Postgresql | 6.x | JasperFx Contributors |
 | Yarp.ReverseProxy | 2.x | (c) Microsoft Corporation |
 
 ### Apache-2.0
@@ -102,7 +111,7 @@ Last updated: 2026-03-25
 | ------- | ------- | --------- |
 | Aspire.Hosting.Testing | 13.x | (c) Microsoft Corporation |
 | Bogus | 35.x | Copyright (c) 2015 Brian Chavez |
-| coverlet.collector | 8.x | (c) 2018 Toni Solarin-Sodara |
+| coverlet.collector | 10.x | (c) 2018 Toni Solarin-Sodara |
 | Microsoft.NET.Test.Sdk | 18.x | (c) Microsoft Corporation |
 | Testcontainers.PostgreSql | 4.x | Copyright (c) 2019-2025 Andre Hofmeister |
 
