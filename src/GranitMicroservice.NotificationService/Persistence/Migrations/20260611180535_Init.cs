@@ -25,7 +25,7 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                     OccurredAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     DurationMs = table.Column<long>(type: "bigint", nullable: false),
                     ErrorMessage = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
-                    IsSuccess = table.Column<bool>(type: "boolean", nullable: false)
+                    IsSuccess = table.Column<bool>(type: "boolean", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -38,7 +38,8 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    DeviceToken = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    DeviceToken = table.Column<string>(type: "character varying(4096)", maxLength: 4096, nullable: false),
+                    DeviceTokenHash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     Platform = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -94,10 +95,10 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     NotificationId = table.Column<Guid>(type: "uuid", nullable: false),
                     NotificationTypeName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Severity = table.Column<int>(type: "integer", nullable: false),
+                    Severity = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     RecipientUserId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Data = table.Column<string>(type: "text", nullable: false),
-                    State = table.Column<int>(type: "integer", nullable: false),
+                    State = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ReadAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -121,14 +122,20 @@ namespace GranitMicroservice.NotificationService.Persistence.Migrations
                 columns: new[] { "NotificationId", "ChannelName" });
 
             migrationBuilder.CreateIndex(
+                name: "uq_notifications_delivery_attempts_delivery_id",
+                table: "notifications_delivery_attempts",
+                column: "DeliveryId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_notifications_mobile_push_tokens_user_tenant",
                 table: "notifications_mobile_push_tokens",
                 columns: new[] { "UserId", "TenantId" });
 
             migrationBuilder.CreateIndex(
-                name: "uq_notifications_mobile_push_tokens_device_tenant",
+                name: "uq_notifications_mobile_push_tokens_device_hash_tenant",
                 table: "notifications_mobile_push_tokens",
-                columns: new[] { "DeviceToken", "TenantId" },
+                columns: new[] { "DeviceTokenHash", "TenantId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

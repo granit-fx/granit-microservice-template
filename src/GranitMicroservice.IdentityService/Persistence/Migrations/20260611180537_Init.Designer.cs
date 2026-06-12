@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GranitMicroservice.IdentityService.Persistence.Migrations
 {
     [DbContext(typeof(IdentityServiceDbContext))]
-    [Migration("20260529142821_AddAuditTrail")]
-    partial class AddAuditTrail
+    [Migration("20260611180537_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -212,12 +212,12 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmailHash")
-                        .HasDatabaseName("ix_granit_identity_users_email_hash");
+                        .HasDatabaseName("ix_identity_users_email_hash");
 
                     b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_granit_identity_users_tenant_id");
+                        .HasDatabaseName("ix_identity_users_tenant_id");
 
-                    b.ToTable("granit_identity_users", (string)null);
+                    b.ToTable("identity_users", (string)null);
                 });
 
             modelBuilder.Entity("Granit.Identity.Federated.Domain.FederatedIdentity", b =>
@@ -282,13 +282,13 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId", "EmailHash")
-                        .HasDatabaseName("ix_identity_user_cache_tenant_email_hash");
+                        .HasDatabaseName("ix_identity_federated_user_cache_tenant_email_hash");
 
                     b.HasIndex("TenantId", "ExternalUserId")
                         .IsUnique()
-                        .HasDatabaseName("uq_identity_user_cache_tenant_external_id");
+                        .HasDatabaseName("uq_identity_federated_user_cache_tenant_external_id");
 
-                    b.ToTable("identity_user_cache_entries", (string)null);
+                    b.ToTable("identity_federated_user_cache_entries", (string)null);
                 });
 
             modelBuilder.Entity("Granit.Auditing.Domain.AuditEntityChange", b =>
