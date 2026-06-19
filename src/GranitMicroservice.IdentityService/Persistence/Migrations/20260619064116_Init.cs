@@ -33,6 +33,23 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "identity_device_trusts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    DeviceId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Level = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    TrustedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    TrustedUntil = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    Reason = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_identity_device_trusts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "identity_federated_user_cache_entries",
                 columns: table => new
                 {
@@ -56,6 +73,54 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_identity_federated_user_cache_entries", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "identity_user_behavioral_profiles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Kind = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    Value = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Count = table.Column<int>(type: "integer", nullable: false),
+                    FirstSeenAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastSeenAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_identity_user_behavioral_profiles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "identity_user_session_reviews",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    SessionId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Decision = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    ReviewedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_identity_user_session_reviews", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "identity_user_session_risks",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    SessionId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Level = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    ReasonsJson = table.Column<string>(type: "text", nullable: false),
+                    AssessedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_identity_user_session_risks", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -157,6 +222,12 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                 column: "AuditEntityChangeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_identity_device_trusts_UserId_DeviceId",
+                table: "identity_device_trusts",
+                columns: new[] { "UserId", "DeviceId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_identity_federated_user_cache_tenant_email_hash",
                 table: "identity_federated_user_cache_entries",
                 columns: new[] { "TenantId", "EmailHash" });
@@ -165,6 +236,24 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                 name: "uq_identity_federated_user_cache_tenant_external_id",
                 table: "identity_federated_user_cache_entries",
                 columns: new[] { "TenantId", "ExternalUserId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_identity_user_behavioral_profiles_UserId_Kind_Value",
+                table: "identity_user_behavioral_profiles",
+                columns: new[] { "UserId", "Kind", "Value" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_identity_user_session_reviews_UserId_SessionId",
+                table: "identity_user_session_reviews",
+                columns: new[] { "UserId", "SessionId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_identity_user_session_risks_UserId_SessionId",
+                table: "identity_user_session_risks",
+                columns: new[] { "UserId", "SessionId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -185,7 +274,19 @@ namespace GranitMicroservice.IdentityService.Persistence.Migrations
                 name: "audit_log_property_changes");
 
             migrationBuilder.DropTable(
+                name: "identity_device_trusts");
+
+            migrationBuilder.DropTable(
                 name: "identity_federated_user_cache_entries");
+
+            migrationBuilder.DropTable(
+                name: "identity_user_behavioral_profiles");
+
+            migrationBuilder.DropTable(
+                name: "identity_user_session_reviews");
+
+            migrationBuilder.DropTable(
+                name: "identity_user_session_risks");
 
             migrationBuilder.DropTable(
                 name: "identity_users");
