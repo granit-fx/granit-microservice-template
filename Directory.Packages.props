@@ -106,10 +106,10 @@
 
   <!-- Observability -->
   <ItemGroup Label="Observability">
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.*" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.16.*" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.*" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.*" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.*" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.*" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.*" />
   </ItemGroup>
 
