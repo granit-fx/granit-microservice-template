@@ -4,7 +4,7 @@ This file lists the third-party libraries used by
 **granit-microservice-template** and their respective licenses. It is updated
 whenever an external dependency is added or changed.
 
-Last updated: 2026-06-03
+Last updated: 2026-06-19
 
 ---
 
@@ -90,8 +90,8 @@ Last updated: 2026-06-03
 | Granit.Persistence.EntityFrameworkCore.Hosting | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Wolverine | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Wolverine.Postgresql | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
-| OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.15.x | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Extensions.Hosting | 1.15.x | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.16.x | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Extensions.Hosting | 1.16.x | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.AspNetCore | 1.15.x | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.Http | 1.15.x | Copyright The OpenTelemetry Authors |
 

@@ -14,6 +14,7 @@
     <Project Path="tests/GranitMicroservice.IdentityService.Tests/GranitMicroservice.IdentityService.Tests.csproj" />
     <Project Path="tests/GranitMicroservice.NotificationService.Tests/GranitMicroservice.NotificationService.Tests.csproj" />
     <Project Path="tests/GranitMicroservice.CatalogService.Tests.Integration/GranitMicroservice.CatalogService.Tests.Integration.csproj" />
+    <Project Path="tests/GranitMicroservice.IdentityService.Tests.Integration/GranitMicroservice.IdentityService.Tests.Integration.csproj" />
     <Project Path="tests/GranitMicroservice.AppHost.Tests/GranitMicroservice.AppHost.Tests.csproj" />
   </Folder>
 </Solution>

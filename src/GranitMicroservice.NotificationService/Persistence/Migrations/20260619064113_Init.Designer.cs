@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GranitMicroservice.NotificationService.Persistence.Migrations
 {
     [DbContext(typeof(NotificationServiceDbContext))]
-    [Migration("20260611180535_Init")]
+    [Migration("20260619064113_Init")]
     partial class Init
     {
         /// <inheritdoc />
