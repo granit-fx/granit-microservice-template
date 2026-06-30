@@ -4,7 +4,11 @@ This file lists the third-party libraries used by
 **granit-microservice-template** and their respective licenses. It is updated
 whenever an external dependency is added or changed.
 
-Last updated: 2026-06-19
+Last updated: 2026-06-30 (global NuGet version refresh via `dotnet restore
+--force-evaluate`; pinned exact resolved versions for third-party packages
+following the legal-precision convention used by granit-dotnet and
+granit-business; aligned the OpenTelemetry instrumentation packages on 1.16.*.
+First-party Granit.* prerelease entries (0.1.x) are intentionally left floating)
 
 ---
 
@@ -25,14 +29,14 @@ Last updated: 2026-06-19
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Aspire.Hosting | 13.x | (c) Microsoft Corporation |
-| Aspire.Hosting.AppHost | 13.x | (c) Microsoft Corporation |
-| Aspire.Hosting.Keycloak | 13.x (preview) | (c) Microsoft Corporation |
-| Aspire.Hosting.PostgreSQL | 13.x | (c) Microsoft Corporation |
-| Aspire.Hosting.RabbitMQ | 13.x | (c) Microsoft Corporation |
-| Aspire.Hosting.Redis | 13.x | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.Authentication.JwtBearer | 10.x | (c) Microsoft Corporation |
-| Microsoft.AspNetCore.OpenApi | 10.x | (c) Microsoft Corporation |
+| Aspire.Hosting | 13.4.6 | (c) Microsoft Corporation |
+| Aspire.Hosting.AppHost | 13.4.6 | (c) Microsoft Corporation |
+| Aspire.Hosting.Keycloak | 13.1.2-preview.1.26125.13 | (c) Microsoft Corporation |
+| Aspire.Hosting.PostgreSQL | 13.4.6 | (c) Microsoft Corporation |
+| Aspire.Hosting.RabbitMQ | 13.4.6 | (c) Microsoft Corporation |
+| Aspire.Hosting.Redis | 13.4.6 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.OpenApi | 10.0.9 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.CSharp.Scripting | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.CSharp.Workspaces | 5.3.0 | (c) Microsoft Corporation |
@@ -42,27 +46,27 @@ Last updated: 2026-06-19
 | Microsoft.CodeAnalysis.VisualBasic.Workspaces | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.Workspaces.Common | 5.3.0 | (c) Microsoft Corporation |
 | Microsoft.CodeAnalysis.Workspaces.MSBuild | 5.3.0 | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore | 10.x | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.Design | 10.x | (c) Microsoft Corporation |
-| Microsoft.EntityFrameworkCore.Relational | 10.x | (c) Microsoft Corporation |
-| Microsoft.Extensions.Caching.StackExchangeRedis | 10.x | (c) Microsoft Corporation |
-| Microsoft.Extensions.Diagnostics.HealthChecks | 10.x | (c) Microsoft Corporation |
-| Microsoft.Extensions.Http.Resilience | 10.x | (c) Microsoft Corporation |
-| Microsoft.Extensions.ServiceDiscovery | 10.x | (c) Microsoft Corporation |
-| Scalar.AspNetCore | 2.x | Scalar Contributors |
-| WolverineFx | 6.x | JasperFx Contributors |
-| WolverineFx.Postgresql | 6.x | JasperFx Contributors |
-| Yarp.ReverseProxy | 2.x | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.Design | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.EntityFrameworkCore.Relational | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Diagnostics.HealthChecks | 10.0.9 | (c) Microsoft Corporation |
+| Microsoft.Extensions.Http.Resilience | 10.7.0 | (c) Microsoft Corporation |
+| Microsoft.Extensions.ServiceDiscovery | 10.7.0 | (c) Microsoft Corporation |
+| Scalar.AspNetCore | 2.16.6 | Scalar Contributors |
+| WolverineFx | 6.16.0 | JasperFx Contributors |
+| WolverineFx.Postgresql | 6.16.0 | JasperFx Contributors |
+| Yarp.ReverseProxy | 2.3.0 | (c) Microsoft Corporation |
 
 ### Apache-2.0
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| AspNetCore.HealthChecks.NpgSql | 9.x | Copyright Xabaril Contributors |
-| AspNetCore.HealthChecks.Rabbitmq | 9.x | Copyright Xabaril Contributors |
-| AspNetCore.HealthChecks.Redis | 9.x | Copyright Xabaril Contributors |
-| FluentValidation | 12.x | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
-| FluentValidation.DependencyInjectionExtensions | 12.x | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
+| AspNetCore.HealthChecks.NpgSql | 9.0.0 | Copyright Xabaril Contributors |
+| AspNetCore.HealthChecks.Rabbitmq | 9.0.0 | Copyright Xabaril Contributors |
+| AspNetCore.HealthChecks.Redis | 9.0.0 | Copyright Xabaril Contributors |
+| FluentValidation | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
+| FluentValidation.DependencyInjectionExtensions | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | Granit | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Auditing.EntityFrameworkCore | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Authentication.JwtBearer | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
@@ -90,16 +94,16 @@ Last updated: 2026-06-19
 | Granit.Persistence.EntityFrameworkCore.Hosting | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Wolverine | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
 | Granit.Wolverine.Postgresql | 0.1.x (prerelease) | (c) 2025-2026 Digital Dynamics |
-| OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.16.x | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Extensions.Hosting | 1.16.x | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Instrumentation.AspNetCore | 1.15.x | Copyright The OpenTelemetry Authors |
-| OpenTelemetry.Instrumentation.Http | 1.15.x | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Extensions.Hosting | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.AspNetCore | 1.16.0 | Copyright The OpenTelemetry Authors |
+| OpenTelemetry.Instrumentation.Http | 1.16.0 | Copyright The OpenTelemetry Authors |
 
 ### PostgreSQL License
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Npgsql.EntityFrameworkCore.PostgreSQL | 10.x | Copyright 2025 The Npgsql Development Team |
+| Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.2 | Copyright 2025 The Npgsql Development Team |
 
 ---
 
@@ -109,25 +113,25 @@ Last updated: 2026-06-19
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Aspire.Hosting.Testing | 13.x | (c) Microsoft Corporation |
-| Bogus | 35.x | Copyright (c) 2015 Brian Chavez |
-| coverlet.collector | 10.x | (c) 2018 Toni Solarin-Sodara |
-| Microsoft.NET.Test.Sdk | 18.x | (c) Microsoft Corporation |
-| Testcontainers.PostgreSql | 4.x | Copyright (c) 2019-2025 Andre Hofmeister |
+| Aspire.Hosting.Testing | 13.4.6 | (c) Microsoft Corporation |
+| Bogus | 35.6.5 | Copyright (c) 2015 Brian Chavez |
+| coverlet.collector | 10.0.1 | (c) 2018 Toni Solarin-Sodara |
+| Microsoft.NET.Test.Sdk | 18.7.0 | (c) Microsoft Corporation |
+| Testcontainers.PostgreSql | 4.12.0 | Copyright (c) 2019-2025 Andre Hofmeister |
 
 ### Apache-2.0 (tests)
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| xunit.runner.visualstudio | 3.1.x | Copyright (C) .NET Foundation |
-| xunit.v3 | 3.2.x | Copyright (C) .NET Foundation |
+| xunit.runner.visualstudio | 3.1.5 | Copyright (C) .NET Foundation |
+| xunit.v3 | 3.2.2 | Copyright (C) .NET Foundation |
 
 ### BSD-3-Clause
 
 | Package     | Version | Copyright                                |
 | ----------- | ------- | ---------------------------------------- |
-| NSubstitute | 5.x     | NSubstitute Contributors                 |
-| Shouldly    | 4.x     | Copyright (c) 2017 Shouldly Contributors |
+| NSubstitute | 5.3.0   | NSubstitute Contributors                 |
+| Shouldly    | 4.3.0   | Copyright (c) 2017 Shouldly Contributors |
 
 ---
 
