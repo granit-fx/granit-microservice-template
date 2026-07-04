@@ -34,7 +34,7 @@ var keycloak = builder.AddKeycloak("keycloak", port: 8080)
 var mailpit = builder.AddContainer("mailpit", "axllent/mailpit")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithHttpEndpoint(port: 8025, targetPort: 8025, name: "ui")
-    .WithEndpoint(port: 1025, targetPort: 1025, name: "smtp", scheme: "tcp");
+    .WithEndpoint(port: 1025, targetPort: 1025, scheme: "tcp", name: "smtp");
 
 // Migrations — run --migrate and exit before services start
 var identityMigration = builder.AddProject<Projects.GranitMicroservice_IdentityService>("identity-migration")
