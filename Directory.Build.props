@@ -9,4 +9,13 @@
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <NoWarn>CA1848;CA1707;CA1305;CA1716;CS1591</NoWarn>
   </PropertyGroup>
+
+  <!-- Roslynator.Analyzers: general C# code-quality analyzers (RCS1xxx).
+       Baseline severity is 'suggestion' (see .editorconfig) so it never trips
+       TreatWarningsAsErrors; promote individual rules to warning as the tree is cleaned. -->
+  <ItemGroup>
+    <PackageReference Include="Roslynator.Analyzers" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

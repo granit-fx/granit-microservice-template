@@ -22,6 +22,14 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.3.0" />
   </ItemGroup>
 
+  <!-- Roslynator: ~200 code-quality analyzers (RCS1xxx). Patch-only float so a new minor
+       (which ships new rules) never silently changes the baseline. Formatting analyzers
+       (Roslynator.Formatting.Analyzers, RCS0xxx) are deliberately NOT referenced — they
+       conflict with `dotnet format`. Severity governed centrally in .editorconfig. -->
+  <ItemGroup Label="Code analysis">
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.15.*" />
+  </ItemGroup>
+
   <!-- Granit framework -->
   <ItemGroup Label="Granit">
     <PackageVersion Include="Granit" Version="0.1.0-dev.*" />

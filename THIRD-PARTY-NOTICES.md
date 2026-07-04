@@ -4,11 +4,13 @@ This file lists the third-party libraries used by
 **granit-microservice-template** and their respective licenses. It is updated
 whenever an external dependency is added or changed.
 
-Last updated: 2026-06-30 (global NuGet version refresh via `dotnet restore
---force-evaluate`; pinned exact resolved versions for third-party packages
-following the legal-precision convention used by granit-dotnet and
-granit-business; aligned the OpenTelemetry instrumentation packages on 1.16.*.
-First-party Granit.* prerelease entries (0.1.x) are intentionally left floating)
+Last updated: 2026-07-05 (added Roslynator.Analyzers 4.15.0, Apache-2.0 — dev-time
+code-quality analyzer, `PrivateAssets="all"`, not redistributed). Prior: 2026-06-30
+(global NuGet version refresh via `dotnet restore --force-evaluate`; pinned exact
+resolved versions for third-party packages following the legal-precision convention
+used by granit-dotnet and granit-business; aligned the OpenTelemetry instrumentation
+packages on 1.16.*. First-party Granit.* prerelease entries (0.1.x) are intentionally
+left floating)
 
 ---
 
@@ -17,7 +19,7 @@ First-party Granit.* prerelease entries (0.1.x) are intentionally left floating)
 | License      | Package count |
 | ------------ | ------------- |
 | MIT          | 28            |
-| Apache-2.0   | 35            |
+| Apache-2.0   | 36            |
 | BSD-3-Clause | 2             |
 | PostgreSQL   | 1             |
 
@@ -98,6 +100,7 @@ First-party Granit.* prerelease entries (0.1.x) are intentionally left floating)
 | OpenTelemetry.Extensions.Hosting | 1.16.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.AspNetCore | 1.16.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Instrumentation.Http | 1.16.0 | Copyright The OpenTelemetry Authors |
+| Roslynator.Analyzers | 4.15.0 | Copyright (c) Josef Pihrt |
 
 ### PostgreSQL License
 

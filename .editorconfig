@@ -1,0 +1,34 @@
+root = true
+
+[*.{cs,csx}]
+
+# ── Roslynator.Analyzers (RCS1xxx) ────────────────────────────────────────────
+# Baseline: advisory only. 'suggestion' surfaces in-IDE and in build output but never
+# escalates under TreatWarningsAsErrors. Promote individual rules to 'warning' (Stage 2)
+# once the tree is verified clean for that rule (a warning == a build error here).
+dotnet_analyzer_diagnostic.category-Roslynator.severity = suggestion
+
+# Disabled because they fight deliberate Granit patterns (harmless to keep even where the
+# pattern is absent):
+#   RCS1102 make class static     → Wolverine handlers must be non-static public classes
+#   RCS1170 read-only auto-prop   → DDD { get; private set; } + EF reflection materialization
+#   RCS1163 unused parameter      → Wolverine Handle sigs / DI factories / endpoint handlers
+#   RCS1213 remove unused member  → EF private ctors, DI/reflection-invoked members
+#   RCS1161 enum explicit values  → contradicts the GRENUM001 analyzer
+dotnet_diagnostic.RCS1102.severity = none
+dotnet_diagnostic.RCS1170.severity = none
+dotnet_diagnostic.RCS1163.severity = none
+dotnet_diagnostic.RCS1213.severity = none
+dotnet_diagnostic.RCS1161.severity = none
+# XML doc-comment family — off, consistent with NoWarn CS1591 (no full-XML-doc requirement):
+dotnet_diagnostic.RCS1140.severity = none
+dotnet_diagnostic.RCS1141.severity = none
+dotnet_diagnostic.RCS1142.severity = none
+dotnet_diagnostic.RCS1181.severity = none
+# RCS1217 (interpolation → concatenation) — opposite of the promoted RCS1267; off to avoid a pair.
+dotnet_diagnostic.RCS1217.severity = none
+# RCS1090 (add ConfigureAwait) — kept at suggestion (correct for lib code, noise in Endpoints);
+# silenced in tests via the [tests/**.cs] section below.
+
+[tests/**.cs]
+dotnet_diagnostic.RCS1090.severity = none
