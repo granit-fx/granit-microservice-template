@@ -32,3 +32,37 @@ dotnet_diagnostic.RCS1217.severity = none
 
 [tests/**.cs]
 dotnet_diagnostic.RCS1090.severity = none
+
+# ── Promoted rules (Stage 2) ──────────────────────────────────────────────────
+# Framework source is held to these; a warning == a build error under
+# TreatWarningsAsErrors. Tests stay advisory (baseline 'suggestion' above).
+[src/**.cs]
+dotnet_diagnostic.RCS1214.severity = warning   # unnecessary interpolated string
+dotnet_diagnostic.RCS1192.severity = warning   # unnecessary verbatim string
+dotnet_diagnostic.RCS1146.severity = warning   # use conditional access ?.
+dotnet_diagnostic.RCS1118.severity = warning   # mark local as const
+dotnet_diagnostic.RCS1085.severity = warning   # use auto-property { get; }
+dotnet_diagnostic.RCS1077.severity = warning   # List.Select().ToList() → ConvertAll()
+dotnet_diagnostic.RCS1197.severity = warning   # optimize StringBuilder.Append/AppendJoin
+dotnet_diagnostic.RCS1123.severity = warning   # add clarifying parentheses
+dotnet_diagnostic.RCS1205.severity = warning   # order named arguments
+dotnet_diagnostic.RCS1021.severity = warning   # expression-bodied lambda
+dotnet_diagnostic.RCS1251.severity = warning   # empty type body → ;
+dotnet_diagnostic.RCS1073.severity = warning   # redundant if → return
+dotnet_diagnostic.RCS1221.severity = warning   # pattern matching over as + null
+dotnet_diagnostic.RCS1235.severity = warning   # optimize dictionary Add
+dotnet_diagnostic.RCS1249.severity = warning   # drop unnecessary null-forgiving !
+dotnet_diagnostic.RCS1212.severity = warning   # remove redundant assignment
+dotnet_diagnostic.RCS1206.severity = warning   # conditional access over ?:
+dotnet_diagnostic.RCS1084.severity = warning   # ?? over ?:
+dotnet_diagnostic.RCS1173.severity = warning   # ?? over if
+dotnet_diagnostic.RCS1006.severity = warning   # merge else + nested if → else if
+dotnet_diagnostic.RCS1196.severity = warning   # extension method as instance method
+dotnet_diagnostic.RCS1267.severity = warning   # interpolation over string.Concat
+dotnet_diagnostic.RCS1261.severity = warning   # using → await using (async dispose)
+
+# EF Core migrations are generated (scaffolded by `dotnet ef migrations add`, regenerated
+# via scripts/regenerate-migrations.sh). Marking them generated_code backs every analyzer
+# off, so a regeneration can't reintroduce a promoted-rule violation and break the build.
+[**/Migrations/*.cs]
+generated_code = true
