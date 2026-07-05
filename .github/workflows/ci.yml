@@ -1,12 +1,20 @@
 # =============================================================================
 # GitHub Actions CI/CD - Granit Microservice Template
 # =============================================================================
-# Pipeline: build+test → security → sbom
+# Pipeline: build+test → security → analysis → sbom
 #
 # Required secrets:
 #   GITLAB_NUGET_USER  — GitLab username (deploy token user) for the
 #                        Granit.* NuGet feed on gitlab.digitaldynamics.be
 #   GITLAB_NUGET_TOKEN — GitLab deploy token (read_package_registry scope)
+#
+# Optional secrets:
+#   SONAR_TOKEN        — SonarCloud token for the `sonarcloud` job, valid for the
+#                        `granit-fx_granit-microservice-template` project. An
+#                        org-level SONAR_TOKEN is inherited but is not accepted for
+#                        this project yet; until a valid one is provided the
+#                        sonarcloud check is red-but-advisory (continue-on-error
+#                        keeps the overall run green).
 # =============================================================================
 
 name: CI
@@ -57,12 +65,16 @@ jobs:
       - name: Build
         run: dotnet build GranitMicroservice.slnx --no-restore
 
+      # Coverage is collected as OpenCover XML (coverlet.collector) so the
+      # `sonarcloud` job can import it via sonar.cs.opencover.reportsPaths.
       - name: Unit Tests
         run: >-
           dotnet test GranitMicroservice.slnx
           --no-build
           --filter "FullyQualifiedName!~Integration"
           --logger "trx;LogFileName=unit-tests.trx"
+          --collect:"XPlat Code Coverage"
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: Integration Tests
         run: >-
@@ -70,6 +82,16 @@ jobs:
           --no-build
           --filter "FullyQualifiedName~Integration"
           --logger "trx;LogFileName=integration-tests.trx"
+          --collect:"XPlat Code Coverage"
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: coverage
+          path: "**/coverage.opencover.xml"
+          retention-days: 7
 
   # ---------------------------------------------------------------------------
   # SECURITY (parallel, no build dependency)
@@ -119,6 +141,79 @@ jobs:
           name: vulnerability-report
           path: vulnerability-report.txt
           retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # ANALYSIS — SonarCloud (advisory: continue-on-error, skipped on fork PRs)
+  # ---------------------------------------------------------------------------
+  # Mirrors granit-dotnet's setup. The Roslynator baseline is advisory
+  # ('suggestion' in .editorconfig), and SonarCloud imports external Roslyn
+  # diagnostics at *Info* as `external_roslyn:RCS*` — hundreds of MAINTAINABILITY
+  # issues that are a scanner artifact, not new debt (see ROSLYNATOR-ADOPTION.md
+  # §1e in granit-dotnet). Those imported advisory rules are suppressed below so
+  # Sonar gates on its own native rules, while the RCS advisory stays live in-IDE.
+  sonarcloud:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    # Skip on PRs from forks — they cannot read SONAR_TOKEN.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    continue-on-error: true
+    permissions:
+      contents: read
+      pull-requests: write  # PR decoration
+    env:
+      NuGetPackageSourceCredentials_GranitGitLab: Username=${{ secrets.GITLAB_NUGET_USER }};Password=${{ secrets.GITLAB_NUGET_TOKEN }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0  # full history for accurate SCM blame / new-code detection
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          global-json-file: global.json
+
+      - name: Setup Java (SonarScanner)
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: SonarCloud cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
+        with:
+          path: ~/.sonar/cache
+          key: sonar-${{ runner.os }}
+
+      - name: Download coverage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: coverage
+
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: SonarCloud scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"granit-fx_granit-microservice-template" \
+            /o:"granit-fx" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.token="${SONAR_TOKEN}" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.exclusions="scripts/**,**/Migrations/**" \
+            /d:sonar.coverage.exclusions="**/*.Tests/**,**/*.Tests.Integration/**,**/Migrations/**,**/GranitMicroservice.AppHost/**" \
+            /d:sonar.issue.ignore.multicriteria="e_ros,e_s2699" \
+            /d:sonar.issue.ignore.multicriteria.e_ros.ruleKey="external_roslyn:RCS*" \
+            /d:sonar.issue.ignore.multicriteria.e_ros.resourceKey="**/*" \
+            /d:sonar.issue.ignore.multicriteria.e_s2699.ruleKey="csharpsquid:S2699" \
+            /d:sonar.issue.ignore.multicriteria.e_s2699.resourceKey="**/*Tests*/**" \
+            /d:sonar.qualitygate.wait="true"
+          dotnet restore GranitMicroservice.slnx
+          dotnet build GranitMicroservice.slnx --no-restore
+          dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
 
   # ---------------------------------------------------------------------------
   # SBOM — CycloneDX JSON, uploaded as artifact
