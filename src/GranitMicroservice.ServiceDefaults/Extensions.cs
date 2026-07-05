@@ -90,7 +90,7 @@ public static class Extensions
         return builder;
     }
 
-    private static IHostApplicationBuilder ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
+    private static void ConfigureOpenTelemetry(this IHostApplicationBuilder builder)
     {
         builder.Logging.AddOpenTelemetry(logging =>
         {
@@ -116,15 +116,11 @@ public static class Extensions
         // Granit.Bundle.Essentials in SharedHostingModule and explicitly in ApiGatewayModule.
         // OpenTelemetry SDK 1.9+ forbids multiple UseOtlpExporter() calls on the same
         // IServiceCollection — registering it here would crash startup under Aspire.
-
-        return builder;
     }
 
-    private static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
+    private static void AddDefaultHealthChecks(this IHostApplicationBuilder builder)
     {
         builder.Services.AddHealthChecks()
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live", "ready", "startup"]);
-
-        return builder;
     }
 }
