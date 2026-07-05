@@ -10,7 +10,7 @@
 #
 # Optional secrets:
 #   SONAR_TOKEN        — SonarCloud token for the `sonarcloud` job. Absent → the
-#                        job fails silently (continue-on-error) and CI stays green.
+#                        scan steps are gated off and the job stays green.
 # =============================================================================
 
 name: CI
@@ -147,6 +147,9 @@ jobs:
   # issues that are a scanner artifact, not new debt (see ROSLYNATOR-ADOPTION.md
   # §1e in granit-dotnet). Those imported advisory rules are suppressed below so
   # Sonar gates on its own native rules, while the RCS advisory stays live in-IDE.
+  #
+  # Until a maintainer sets the SONAR_TOKEN secret, the scan steps are gated off
+  # (env.SONAR_TOKEN != '') so the job stays green rather than red-failing.
   sonarcloud:
     needs: build-and-test
     runs-on: ubuntu-latest
@@ -157,40 +160,51 @@ jobs:
       contents: read
       pull-requests: write  # PR decoration
     env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       NuGetPackageSourceCredentials_GranitGitLab: Username=${{ secrets.GITLAB_NUGET_USER }};Password=${{ secrets.GITLAB_NUGET_TOKEN }}
     steps:
+      - name: Report missing SONAR_TOKEN
+        if: env.SONAR_TOKEN == ''
+        run: echo "::notice::SONAR_TOKEN secret not set — skipping SonarCloud analysis. Add it under Settings → Secrets → Actions to enable."
+
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        if: env.SONAR_TOKEN != ''
         with:
           fetch-depth: 0  # full history for accurate SCM blame / new-code detection
 
       - name: Setup .NET
+        if: env.SONAR_TOKEN != ''
         uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
         with:
           global-json-file: global.json
 
       - name: Setup Java (SonarScanner)
+        if: env.SONAR_TOKEN != ''
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
         with:
           distribution: temurin
           java-version: 17
 
       - name: SonarCloud cache
+        if: env.SONAR_TOKEN != ''
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
         with:
           path: ~/.sonar/cache
           key: sonar-${{ runner.os }}
 
       - name: Download coverage
+        if: env.SONAR_TOKEN != ''
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: coverage
 
       - name: Install SonarScanner
+        if: env.SONAR_TOKEN != ''
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: SonarCloud scan
+        if: env.SONAR_TOKEN != ''
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           dotnet sonarscanner begin \
