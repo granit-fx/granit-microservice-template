@@ -29,9 +29,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Default all permissions to read — each job declares write only where needed.
-# Required by OpenSSF Scorecard: Token-Permissions check.
-permissions: read-all
+# Minimal top-level scope — each job declares any write it needs. Jobs without
+# their own `permissions:` block (e.g. secret-detection) inherit this read-only
+# default. Satisfies OpenSSF Scorecard's Token-Permissions check.
+permissions:
+  contents: read
 
 env:
   DOTNET_NOLOGO: true

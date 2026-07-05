@@ -5,8 +5,9 @@ on:
   schedule:
     - cron: "0 6 * * 1" # Weekly Monday 06:00 UTC
 
-# Default all permissions to read — validate-template overrides issues: write.
-permissions: read-all
+# Minimal top-level scope — validate-template declares contents: read + issues: write.
+permissions:
+  contents: read
 
 env:
   DOTNET_NOLOGO: true
