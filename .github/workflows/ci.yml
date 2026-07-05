@@ -9,8 +9,12 @@
 #   GITLAB_NUGET_TOKEN — GitLab deploy token (read_package_registry scope)
 #
 # Optional secrets:
-#   SONAR_TOKEN        — SonarCloud token for the `sonarcloud` job. Absent → the
-#                        job fails silently (continue-on-error) and CI stays green.
+#   SONAR_TOKEN        — SonarCloud token for the `sonarcloud` job, valid for the
+#                        `granit-fx_granit-microservice-template` project. An
+#                        org-level SONAR_TOKEN is inherited but is not accepted for
+#                        this project yet; until a valid one is provided the
+#                        sonarcloud check is red-but-advisory (continue-on-error
+#                        keeps the overall run green).
 # =============================================================================
 
 name: CI
