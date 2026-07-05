@@ -206,7 +206,7 @@ jobs:
             /d:sonar.token="${SONAR_TOKEN}" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.exclusions="scripts/**,**/Migrations/**" \
-            /d:sonar.coverage.exclusions="**/*.Tests/**,**/*.Tests.Integration/**,**/Migrations/**,**/GranitMicroservice.AppHost/**" \
+            /d:sonar.coverage.exclusions="**/*.Tests/**,**/*.Tests.Integration/**,**/Migrations/**,**/GranitMicroservice.AppHost/**,**/Program.cs,**/ServiceDefaults/**" \
             /d:sonar.issue.ignore.multicriteria="e_ros,e_s2699" \
             /d:sonar.issue.ignore.multicriteria.e_ros.ruleKey="external_roslyn:RCS*" \
             /d:sonar.issue.ignore.multicriteria.e_ros.resourceKey="**/*" \
