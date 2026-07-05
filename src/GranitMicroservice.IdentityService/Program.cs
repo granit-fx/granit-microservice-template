@@ -18,6 +18,10 @@ using GranitMicroservice.IdentityService.Persistence;
 using GranitMicroservice.ServiceDefaults;
 using GranitMicroservice.Shared.Hosting.Extensions;
 
+// Aspire connection-string name for this service's PostgreSQL database
+// (matches postgres.AddDatabase("identity-db") in the AppHost).
+const string IdentityDbConnectionName = "identity-db";
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // ── Step 1 · Shared cross-cutting concerns ────────────────────────────────────
@@ -51,7 +55,7 @@ await builder.AddGranitAsync(granit => granit
 // AddGranitDbContext uses ServiceLifetime.Scoped so that Granit interceptors
 // (AuditedEntityInterceptor, …) can be resolved from the scoped provider.
 builder.Services.AddGranitDbContext<IdentityServiceDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString(IdentityDbConnectionName)));
 
 // ── Step 4 · Granit Identity EF Core stores ──────────────────────────────────
 // Two registrations required:
@@ -64,9 +68,9 @@ builder.Services.AddGranitDbContext<IdentityServiceDbContext>(options =>
 // Migrations for both tables live on IdentityServiceDbContext (see
 // ConfigureIdentityModule + ConfigureGranitIdentityModule in OnGranitModelCreating).
 builder.AddGranitIdentityFederatedEntityFrameworkCore(opts =>
-    opts.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
+    opts.UseNpgsql(builder.Configuration.GetConnectionString(IdentityDbConnectionName)));
 builder.Services.AddGranitIdentityEntityFrameworkCore(opts =>
-    opts.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
+    opts.UseNpgsql(builder.Configuration.GetConnectionString(IdentityDbConnectionName)));
 
 // ── Step 4b · Audit trail EF Core store ───────────────────────────────────────
 // IdentityServiceModule pulls GranitAuditingModule transitively (via
@@ -76,7 +80,7 @@ builder.Services.AddGranitIdentityEntityFrameworkCore(opts =>
 // rows carry a TenantId filtered by a row-level query filter; migrations for the
 // audit tables are owned by IdentityServiceDbContext via ConfigureAuditingModule.
 builder.AddGranitAuditingEntityFrameworkCore(opts =>
-    opts.UseNpgsql(builder.Configuration.GetConnectionString("identity-db")));
+    opts.UseNpgsql(builder.Configuration.GetConnectionString(IdentityDbConnectionName)));
 
 // ── Step 5 · CORS ─────────────────────────────────────────────────────────────
 // Strict BFF in production: the SPA only talks to the gateway, never to this

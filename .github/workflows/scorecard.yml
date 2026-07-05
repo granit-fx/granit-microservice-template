@@ -10,7 +10,8 @@ on:
   schedule:
     - cron: "30 1 * * 1" # Weekly Monday 01:30 UTC
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   analysis:

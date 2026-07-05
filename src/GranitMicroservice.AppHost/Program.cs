@@ -79,7 +79,7 @@ var catalogService = builder.AddProject<Projects.GranitMicroservice_CatalogServi
     .WaitFor(rabbitmq)
     .WaitForCompletion(catalogMigration);
 
-var notificationService = builder.AddProject<Projects.GranitMicroservice_NotificationService>("notification-service")
+builder.AddProject<Projects.GranitMicroservice_NotificationService>("notification-service")
     .WithReference(notificationDb)
     .WithReference(redis)
     .WithReference(rabbitmq)
